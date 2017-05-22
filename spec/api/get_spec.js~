@@ -1,0 +1,10 @@
+var frisby = require('frisby');
+frisby.create('testa o metodo get')
+  .get('http://localhost:3000/alunos')
+  .expectStatus(200)
+  .expectHeaderContains('Content-Type', 'application/json')
+  .expectJSONTypes({
+      alunos: Array
+   }
+ )
+.toss();
