@@ -15,6 +15,10 @@ var filmeOp = require('./models/filmes');
 
 var notaOp = require('./models/notas');
 
+var usuarioOp = require('./models/usuarios');
+
+var listaOp = require('./models/listaFilmes');
+
 // comente as duas linhas abaixo
 // var index = require('./routes/index');
 // var users = require('./routes/users');
@@ -221,21 +225,58 @@ router.route('/filmes')   // operacoes sobre todos os filmes
 
 router.route('/filmes/:id')   // operacoes sobre um filme(id)
   .get(function(req, res) {   // GET
-     	console.log(req.path); 
-		console.log(JSON.stringify(req.body));
-		res.status(200).send('String test');
+      var response = {};
+      var query = {"id": req.params.id};
+      filmeOp.findOne(query, function(erro, data) {
+         if(erro) {
+            response = {"resultado": "falha de acesso ao BD"};
+            res.json(response);
+         } else if (data == null) {
+             response = {"resultado": "filme inexistente"};
+             res.json(response);   
+	 } else {
+	    response = {"filmes": [data]};
+            res.json(response);
+           }
+        }
+      )
     }
   )
   .put(function(req, res) {   // PUT (altera)
-     	console.log(req.path); 
-		console.log(JSON.stringify(req.body));
-		res.status(200).send('String test');
-  })
+      var response = {};
+      var query = {"id": req.params.id};
+      var data = {"titulo" : req.body.titulo, "elenco" : req.body.elenco, "diretor" : req.body.diretor};
+      filmeOp.findOneAndUpdate(query, data, function(erro, data) {
+          if(erro) {
+            response = {"resultado": "falha de acesso ao DB"};
+            res.json(response);
+	  } else if (data == null) { 
+             response = {"resultado": "filme inexistente"};
+             res.json(response);   
+          } else {
+             response = {"resultado": "filme atualizado no BD"};
+             res.json(response);   
+	  }
+        }
+      )
+    }
+  )
   .delete(function(req, res) {   // DELETE (remove)
-    	console.log(req.path); 
-		console.log(JSON.stringify(req.body));
-		res.status(200).send('String test');
-  });
+  		var response = {};
+    	var query = {"id": req.params.id};
+     	filmeOp.findOneAndRemove(query, function(erro, data) {
+        	if(erro) {
+            	response = {"resultado": "falha de acesso ao DB"};
+            	res.json(response);
+	 		} else if (data == null) {	      
+            	response = {"resultado": "filme inexistente"};
+            	res.json(response);
+            } else {
+            	response = {"resultado": "filme removido do BD"};
+            	res.json(response);
+	   		}
+        })
+   });
 
 
 router.route('/notas')   // operacoes sobre todas as notas
@@ -291,82 +332,259 @@ router.route('/notas')   // operacoes sobre todas as notas
 
 
 router.route('/notas/:id')   // operacoes sobre uma nota(id)
+    .get(function(req, res) {   // GET
+      var response = {};
+      var query = {"id": req.params.id};
+      notaOp.findOne(query, function(erro, data) {
+         if(erro) {
+            response = {"resultado": "falha de acesso ao BD"};
+            res.json(response);
+         } else if (data == null) {
+             response = {"resultado": "nota inexistente"};
+             res.json(response);   
+	 } else {
+	    response = {"notas": [data]};
+            res.json(response);
+           }
+        }
+      )
+    }
+  )
   .put(function(req, res) {   // PUT (altera)
-  		console.log(req.path); 
-		console.log(JSON.stringify(req.body));
-		res.status(200).send('String test');
-    });
+      var response = {};
+      var query = {"id": req.params.id};
+      var data = {"valor" : req.body.valor, "filmeId" : req.body.filmeId, "usuarioId" : req.body.usuarioId};
+      notaOp.findOneAndUpdate(query, data, function(erro, data) {
+          if(erro) {
+            response = {"resultado": "falha de acesso ao DB"};
+            res.json(response);
+	  } else if (data == null) { 
+             response = {"resultado": "nota inexistente"};
+             res.json(response);   
+          } else {
+             response = {"resultado": "nota atualizado no BD"};
+             res.json(response);   
+	  }
+        }
+      )
+    }
+  )
+  .delete(function(req, res) {   // DELETE (remove)
+  		var response = {};
+    	var query = {"id": req.params.id};
+     	notaOp.findOneAndRemove(query, function(erro, data) {
+        	if(erro) {
+            	response = {"resultado": "falha de acesso ao DB"};
+            	res.json(response);
+	 		} else if (data == null) {	      
+            	response = {"resultado": "nota inexistente"};
+            	res.json(response);
+            } else {
+            	response = {"resultado": "nota removido do BD"};
+            	res.json(response);
+	   		}
+        })
+   });
+   
+router.route('/usuarios') 
+	.get(function(req, res) {  // GET
 
-
-router.route('/usuarios')   // operacoes sobre todos os usuarios
-  .get(function(req, res) {  // GET
-		console.log(req.path); 
-		console.log(JSON.stringify(req.body));	
-		res.status(200).send('String test');
-  })
+    var response = {};
+    usuarioOp.find({}, function(erro, data) {
+       if(erro)
+          response = {"resultado": "Falha de acesso ao BD"};
+        else
+          response = {"usuarios": data};
+          res.json(response);
+        }
+      )
+    }
+  )
   .post(function(req, res) {   // POST (cria)
-		console.log(req.path); 
-		console.log(JSON.stringify(req.body));	
-		res.status(200).send('String test');
+
+     	var query = {"id": req.body.id};
+     	var response = {};
+     	usuarioOp.findOne(query, function(erro, data) {
+        	if (data == null) {
+        		var db = new usuarioOp(); //TODO checar se algum campo obrigatorio esta vazio...
+           		db.id = req.body.id;
+           		db.username = req.body.username;
+	   			db.senha = req.body.senha;
+           		db.email = req.body.email;
+           		
+           		//criar lista = e pegar seu respectivo ID
+           		db.save(function(erro) {
+             		if(erro) {
+                		response = {"resultado": "Falha de insercao no BD"};
+                 		res.json(response);
+             		} else {
+                    	response = {"resultado": "usuario inserido no BD"};
+                		res.json(response);
+              		}
+           		})
+        	} else {
+	    		response = {"resultado": "usuario ja existente"};
+            	res.json(response);
+            }
+        })
   })
   .delete(function(req, res) {	
 		console.log(req.path); 
 		console.log(JSON.stringify(req.body));
 		res.status(200).send('String test');
   });
-
+   
 router.route('/usuarios/:id')   // operacoes sobre um usuario(id)
   .get(function(req, res) {   // GET
-     	console.log(req.path); 
-		console.log(JSON.stringify(req.body));
-		res.status(200).send('String test');
-  })
+      var response = {};
+      var query = {"id": req.params.id};
+      usuarioOp.findOne(query, function(erro, data) {
+         if(erro) {
+            response = {"resultado": "falha de acesso ao BD"};
+            res.json(response);
+         } else if (data == null) {
+             response = {"resultado": "usuario inexistente"};
+             res.json(response);   
+	 } else {
+	    response = {"usuarios": [data]};
+            res.json(response);
+           }
+        }
+      )
+    }
+  )
   .put(function(req, res) {   // PUT (altera)
-     	console.log(req.path); 
-		console.log(JSON.stringify(req.body));
-		res.status(200).send('String test');
-  })
+      var response = {};
+      var query = {"id": req.params.id};
+      var data = {"username" : req.body.username, "senha" : req.body.senha, "email" : req.body.email};
+      usuarioOp.findOneAndUpdate(query, data, function(erro, data) {
+          if(erro) {
+            response = {"resultado": "falha de acesso ao DB"};
+            res.json(response);
+	  } else if (data == null) { 
+             response = {"resultado": "usuario inexistente"};
+             res.json(response);   
+          } else {
+             response = {"resultado": "usuario atualizado no BD"};
+             res.json(response);   
+	  }
+        }
+      )
+    }
+  )
   .delete(function(req, res) {   // DELETE (remove)
-    	console.log(req.path); 
-		console.log(JSON.stringify(req.body));
-		res.status(200).send('String test');
-  });
+  		var response = {};
+    	var query = {"id": req.params.id};
+     	usuarioOp.findOneAndRemove(query, function(erro, data) {
+        	if(erro) {
+            	response = {"resultado": "falha de acesso ao DB"};
+            	res.json(response);
+	 		} else if (data == null) {	      
+            	response = {"resultado": "usuario inexistente"};
+            	res.json(response);
+            } else {
+            	//deletar lista e notas deste usuario aqui
+            	response = {"resultado": "usuario removido do BD"};
+            	res.json(response);
+	   		}
+        })
+   });
+   
 
 router.route('/listas')   // operacoes sobre todas as listas
   .get(function(req, res) {  // GET
-	console.log(req.path); 
-	console.log(JSON.stringify(req.body));	
-	res.status(200).send('String test');
-
+    var response = {};
+    lsitaOp.find({}, function(erro, data) {
+       if(erro)
+          response = {"resultado": "Falha de acesso ao BD"};
+        else
+          response = {"listas": data};
+          res.json(response);
+        }
+      )
     }
   )
   .post(function(req, res) {   // POST (cria)
-	console.log(req.path); 
-	console.log(JSON.stringify(req.body));	
-	res.status(200).send('String test');
+     var query = {"id": req.body.id};
+     var response = {};
+     listaOp.findOne(query, function(erro, data) {
+        if (data == null) {
+           var db = new listaOp();
+           db.id = req.body.id;
+           db.filmesId = req.body.filmesId; //array de id, mas inicialisa com lista vazia
+           db.save(function(erro) {
+             if(erro) {
+                 response = {"resultado": "Falha de insercao no BD"};
+                 res.json(response);
+             } else {
+                 response = {"resultado": "Lista inserido no BD"};
+                 res.json(response);
+              }
+            }
+          )
+        } else {
+	    response = {"resultado": "Lista ja existente"};
+            res.json(response);
+          }
+        }
+      )
     }
-  )
-  .delete(function(req, res) {	
-		console.log(req.path); 
-		console.log(JSON.stringify(req.body));
-		res.status(200).send('String test');
-  	}
   );
+  //OBs: nao tem pq deletar todas as listas, uma vez q ao deletar um usuario deleta sua lista por id
 
 router.route('/listas/:id')   // operacoes sobre uma lista(id)
   .get(function(req, res) {   // GET
-     	console.log(req.path); 
-		console.log(JSON.stringify(req.body));
-		res.status(200).send('String test');
-  })
+      var response = {};
+      var query = {"id": req.params.id}; //é uma array nao sei se muda algo
+      listaOp.findOne(query, function(erro, data) {
+         if(erro) {
+            response = {"resultado": "falha de acesso ao BD"};
+            res.json(response);
+         } else if (data == null) {
+             response = {"resultado": "lista inexistente"};
+             res.json(response);   
+	 } else {
+	    response = {"listas": [data]};
+            res.json(response);
+           }
+        }
+      )
+    }
+  )
   .put(function(req, res) {   // PUT (altera)
-     	console.log(req.path); 
-		console.log(JSON.stringify(req.body));
-		res.status(200).send('String test');
-  })
+      var response = {};
+      var query = {"id": req.params.id};
+      var data = {"filmesId" : req.body.filmesId};
+      listaOp.findOneAndUpdate(query, data, function(erro, data) {
+          if(erro) {
+            response = {"resultado": "falha de acesso ao DB"};
+            res.json(response);
+	  } else if (data == null) { 
+             response = {"resultado": "lista inexistente"};
+             res.json(response);   
+          } else {
+             response = {"resultado": "lista atualizado no BD"};
+             res.json(response);   
+	  }
+        }
+      )
+    }
+  )
   .delete(function(req, res) {   // DELETE (remove)
-    	console.log(req.path); 
-		console.log(JSON.stringify(req.body));
-		res.status(200).send('String test');
-  });
+  		var response = {};
+    	var query = {"id": req.params.id};
+     	listaOp.findOneAndRemove(query, function(erro, data) {
+        	if(erro) {
+            	response = {"resultado": "falha de acesso ao DB"};
+            	res.json(response);
+	 		} else if (data == null) {	      
+            	response = {"resultado": "lista inexistente"};
+            	res.json(response);
+            } else {
+            	//deletar lista e notas deste usuario aqui
+            	response = {"resultado": "lista removido do BD"};
+            	res.json(response);
+	   		}
+        })
+   });
 
