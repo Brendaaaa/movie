@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+<body>
+
+<h1>Lista de filmes</h1>
+
+<br>
+
+<div ng-app="myApp" ng-controller="myCtrl">
+  <form>
+    id: <input type="text" ng-model="id"><br><br>
+    Nome: <input type="text" ng-model="nome"><br><br>
+    Curso: <input type="text" ng-model="curso"><br><br>
+    <button ng-click="acessa()">ACESSA</button> &nbsp;
+    <button ng-click="insere()">INSERE</button> &nbsp;
+    <button ng-click="atualiza()">ATUALIZA</button> &nbsp;
+    <button ng-click="remove()">REMOVE</button> &nbsp;
+  </form>
+
+  <br><br>
+  Resultado: {{mensagem}}
+  
+  <br><br>
+  <table cellspacing="8">
+    <tr> <th>{{hid}}</th>  <th>{{hnome}}</th>  <th>{{hcurso}}</th> </tr>
+    <tr ng-repeat="x in filmes">
+      <td>{{ x.id }}</td>
+      <td>{{ x.titulo }}</td>
+     
+    </tr>
+  </table>
+
+</div>
+
+
+<script>
+var app = angular.module('myApp', []);
+app.controller('myCtrl', function($scope, $http) {
+  // ACESSA
+  $scope.acessa = function() {
+     var url = "/filmes";
+     //if ($scope.id != undefined) url = "/lista/" + $scope.id;
+     var request = $http({
+                 "method": "get",
+                  "url": url});
+     request.success(function(reply) {
+        if(reply.filmes != null) {
+          $scope.hid = "id";
+          $scope.htitulo = "Titulo";
+          //$scope.hcurso = "Curso";
+          //$scope.mensagem = "";
+          $scope.filmes = reply.filmes;
+          } else {
+              $scope.clear();
+              $scope.mensagem = reply.resultado;
+            }
+         }
+      );
+      request.error(function(reply) {
+         alert("Falha na requisicao");
+      }
+    );
+  };
+
+  // INSERE
+  $scope.insere = function() {
+      $scope.clear();
+      if ($scope.id == undefined || $scope.id.length == 0 ||
+          $scope.nome == undefined || $scope.nome.length == 0 ||
+          $scope.curso == undefined || $scope.curso.length == 0) {
+             $scope.clear();
+             $scope.mensagem = "preencha todos os campos acima";
+             return;
+      }
+      var data = {"id": $scope.id,
+                  "nome": $scope.nome,
+                  "curso": $scope.curso};
+      var request = $http({
+                 "method": "post",
+                 "url": "/filmes",
+                 "data": data});
+      request.success(function(reply) {
+        $scope.mensagem = reply.resultado;
+        }
+      );
+      request.error(function(reply) {
+        alert("Falha na requisicao");
+      }
+    );
+  };
+
+  // ATUALIZA
+  $scope.atualiza = function() {
+     $scope.clear();
+     if (($scope.id == undefined || $scope.id.length == 0) ||
+         ($scope.nome == undefined || $scope.nome.length == 0) &&
+         ($scope.curso == undefined || $scope.curso.length == 0)) {
+             $scope.clear();
+             $scope.mensagem = "preencha  id e pelo menos um campo acima";
+             return;
+     }
+     var data = {"id": $scope.id,
+                 "nome": $scope.nome,
+                 "curso": $scope.curso};
+     var request = $http({
+                 "method": "put",
+                 "url": "/filmes/" + $scope.id,
+                 "data": data});
+     request.success(function(reply) {
+         $scope.mensagem = reply.resultado;
+         }
+      );
+      request.error(function(reply) {
+        alert("Falha na requisicao");
+       }
+    );
+  };
+
+  // REMOVE
+  $scope.remove = function() {
+     $scope.clear();
+     if ($scope.id == undefined || $scope.id.length == 0) {
+         $scope.clear();
+         $scope.mensagem = "preencha o id do aluno";
+         return;
+     }
+     var request = $http({
+                 "method": "delete",
+                 "url": "/filmes/" + $scope.id});
+     request.success(function(reply) {
+         $scope.mensagem = reply.resultado;
+       }
+     );
+     request.error(function(reply) {
+        alert("Falha na requisicao");
+       }
+     );
+   };
+
+  // CLEAR
+  $scope.clear = function() {
+    $scope.filmes = [];
+    $scope.mensagem = "";
+    $scope.hid = $scope.hnome = $scope.hcurso = "";
+    }
+  }
+);
+</script> 
+
+</body>
+</html>
