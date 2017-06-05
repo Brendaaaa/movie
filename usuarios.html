@@ -65,65 +65,7 @@ app.controller('myCtrl', function($scope, $http) {
     );
   };
 
-  // INSERE
-  $scope.insere = function() {
-      $scope.clear();
-      if ($scope.id == undefined || $scope.id.length == 0 ||
-          $scope.username == undefined || $scope.username.length == 0 ||
-          $scope.email == undefined || $scope.email.length == 0
-          $scope.senha == undefined || $scope.senha.length == 0) {
-             $scope.clear();
-             $scope.mensagem = "preencha todos os campos acima";
-             return;
-      }
-      var data = {"id": $scope.id,
-                  "username": $scope.username,
-                  "email": $scope.email
-                  "senha": $scope.senha};
-      var request = $http({
-                 "method": "post",
-                 "url": "/usuarios",
-                 "data": data});
-      request.success(function(reply) {
-        $scope.mensagem = reply.resultado;
-        }
-      );
-      request.error(function(reply) {
-        alert("Falha na requisicao");
-      }
-    );
-  };
-
-  // ATUALIZA
-  $scope.atualiza = function() {
-     $scope.clear();
-      if (($scope.id == undefined || $scope.id.length == 0) &&
-          ($scope.username == undefined || $scope.username.length == 0 ||
-          $scope.email == undefined || $scope.email.length == 0
-          $scope.senha == undefined || $scope.senha.length == 0)) {
-             $scope.clear();
-             $scope.mensagem = "preencha  IDd e pelo menos um campo acima";
-             return;
-     }
-     var data = {"id": $scope.id,
-                  "username": $scope.username,
-                  "email": $scope.email
-                  "senha": $scope.senha};
-     var request = $http({
-                 "method": "put",
-                 "url": "/usuarios/" + $scope.id,
-                 "data": data});
-     request.success(function(reply) {
-         $scope.mensagem = reply.resultado;
-         }
-      );
-      request.error(function(reply) {
-        alert("Falha na requisicao");
-       }
-    );
-  };
-
-  // REMOVE
+    // REMOVE
   $scope.remove = function() {
      $scope.clear();
      if ($scope.id == undefined || $scope.id.length == 0) {
@@ -144,6 +86,67 @@ app.controller('myCtrl', function($scope, $http) {
      );
    };
 
+     // INSERE
+  $scope.insere = function() {
+      $scope.clear();
+      if ($scope.id == undefined || $scope.id.length == 0 ||
+          $scope.username == undefined || $scope.username.length == 0 ||
+          $scope.email == undefined || $scope.email.length == 0 ||
+          $scope.senha == undefined || $scope.senha.length == 0) {
+             $scope.clear();
+             $scope.mensagem = "preencha todos os campos acima";
+             return;
+      }
+            var data = {"id": $scope.id,
+                  "username": $scope.username,
+                  "email": $scope.email,
+                  "senha": $scope.senha};
+                  
+            var request = $http({
+                 "method": "post",
+                 "url": "/usuarios",
+                 "data": data});
+            request.success(function(reply) {
+                    $scope.mensagem = reply.resultado;
+                    }
+            );
+            request.error(function(reply) {
+                alert("Falha na requisicao");
+            }
+            );
+  };
+   
+   // ATUALIZA
+  $scope.atualiza = function() {
+     $scope.clear();
+      if (($scope.id == undefined || $scope.id.length == 0) ||
+          ($scope.username == undefined || $scope.username.length == 0) &&
+          ($scope.email == undefined || $scope.email.length == 0) &&
+          ($scope.senha == undefined || $scope.senha.length == 0)) {
+             $scope.clear();
+             $scope.mensagem = "preencha  ID e pelo menos um campo acima";
+             return;
+     }
+     var data = {"id": $scope.id,
+                  "username": $scope.username,
+                  "email": $scope.email,
+                  "senha": $scope.senha};
+     var request = $http({
+                 "method": "put",
+                 "url": "/usuarios/" + $scope.id,
+                 "data": data});
+     request.success(function(reply) {
+         $scope.mensagem = reply.resultado;
+         }
+      );
+      request.error(function(reply) {
+        alert("Falha na requisicao");
+       }
+    );
+  };
+   
+   
+   
   // CLEAR
   $scope.clear = function() {
     $scope.usuarios = [];
