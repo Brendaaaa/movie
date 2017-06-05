@@ -14,12 +14,15 @@
 		padding: 10px;
 	
 		}
+		
+		
 
 	</style>
 </head>
 <body>
 
 <h1>Visualização de filmes</h1>
+
 
 <br>
 
@@ -37,11 +40,13 @@
   
   <br><br>
   <table cellspacing="8">
-    <tr> <th>{{hra}}</th>  <th>{{hnome}}</th>  <th>{{hcurso}}</th> </tr>
+    <tr>  <th>{{htitulo}}</th> <th>{{helenco}}</th> <th>{{hdiretor}}</th>  </tr>
     <tr ng-repeat="x in filmes">
-      <td>{{ x.id }}</td>
-      <td>{{ x.titulo }}</td>
-
+      <td><h1>{{ x.titulo }}</h1></td>
+      
+      <td> {{x.elenco}} </td>
+      <td>{{x.diretor}}</td>
+      
     </tr>
   </table>
 
@@ -60,8 +65,10 @@ app.controller('myCtrl', function($scope, $http) {
                   "url": url});
      request.success(function(reply) {
         if(reply.filmes != null) {
-          $scope.hid = "id";
+          
           $scope.htitulo = "titulo"
+          $scope.helenco = "elenco"
+          $scope.hdiretor = "diretor"
          // $scope.mensagem = "";
           $scope.filmes = reply.filmes;
           } else {
