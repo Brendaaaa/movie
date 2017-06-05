@@ -78,6 +78,13 @@ router.route('/')
       res.sendfile(path, {"root": "./"});
    }
   );
+  
+router.route('/') 
+  .get(function(req, res) {  // GET
+      var path = 'usuarios.html';
+      res.sendfile(path, {"root": "./"});
+   }
+  );
 
 router.route('/alunos')   // operacoes sobre todos os alunos
   .get(function(req, res) {  // GET
@@ -206,6 +213,10 @@ router.route('/filmes')   // operacoes sobre todos os filmes
                                 db.titulo = req.body.titulo;
                                 db.elenco = req.body.elenco;
                                 db.diretor = req.body.diretor;
+                                db.dataLanc = req.body.dataLanc;
+                                db.rank = req.body.rank;
+                                db.generos = req.body.generos;
+                                db.trailer = req.body.trailer;
                                 
                             }
                             catch(error) {
@@ -222,7 +233,7 @@ router.route('/filmes')   // operacoes sobre todos os filmes
 
            		db.save(function(erro) {
              		if(erro) {
-                		response = {"resultado": "Falha de insercao no BD"};
+                		response = {"resultado": "Falha  2 de insercao no BD"};
                  		res.json(response);
              		} else {
                     	response = {"resultado": "Filme inserido no BD"};
