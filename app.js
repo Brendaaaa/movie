@@ -203,7 +203,8 @@ router.route('/filmes')   // operacoes sobre todos os filmes
             var db = new filmeOp(); //TODO checar se algum campo obrigatorio esta vazio... || funciona o que eu fiz, agora se alguém quiser modificar a implementação, a vontade
             //TODO Adicionar todos os campos
             try {   
-                if(req.body.id == null || req.body.titulo == null){
+                if(req.body.id == null || req.body.titulo == null){ //TODO remove id como obrigatorio, pq o id eh gerado pelo servidor
+                    //TODO tratar quando o id ja foi usado
                     throw error;
                 }
                 db.id = req.body.id;
@@ -215,16 +216,17 @@ router.route('/filmes')   // operacoes sobre todos os filmes
                 db.generos = req.body.generos;
                 db.trailer = req.body.trailer;      
             } catch(error){
-                response = {"resultado": "Falha 1 de insercao no BD"};
+                response = {"resultado": "Id e titulo sao obrigatorios. Não foi possível inserir o filme no banco de dados"};
                 return res.json(response);
             }
+            
 
             db.save(function(erro) {
                 if(erro) {
-                    response = {"resultado": "Falha  2 de insercao no BD"};
+                    response = {"resultado": "Um problema ocorreu ao inserir o filme no banco de dados, tente novamente mais tarde."};
                     res.json(response);
                 } else {
-                    response = {"resultado": "Filme inserido no BD"};
+                    response = {"resultado": "Filme inserido no banco de dados"};
                     res.json(response);
                 }
             })
@@ -234,11 +236,13 @@ router.route('/filmes')   // operacoes sobre todos os filmes
             res.json(response);
         }
     })
-})
-.delete(function(req, res) {  
-    console.log(req.path); 
-    console.log(JSON.stringify(req.body));
-    res.status(200).send('String test');
+})//;
+.delete(function(req, res) {
+    
+//    TODO eh necessario um mecanismo de deletar todos os filmes?
+//    console.log(req.path); 
+//    console.log(JSON.stringify(req.body));
+//    res.status(200).send('String test');
 });
 
 
@@ -251,10 +255,10 @@ router.route('/filmes/:id')   // operacoes sobre um filme(id)
             response = {"resultado": "Falha de acesso ao banco de dados"};
             res.json(response);
         } else if (data == null) {
-            response = {"resultado": "filme inexistente"};
+            response = {"resultado": "Filme inexistente"};
             res.json(response);   
         } else {
-            response = {"filmes": [data]};
+            response = {"filme": [data]};
             res.json(response);
         }
     })
@@ -262,16 +266,16 @@ router.route('/filmes/:id')   // operacoes sobre um filme(id)
 .put(function(req, res) {   // PUT (altera)
     var response = {};
     var query = {"id": req.params.id};
-    var data = {"titulo" : req.body.titulo, "elenco" : req.body.elenco, "diretor" : req.body.diretor};
+    var data = {"titulo" : req.body.titulo, "elenco" : req.body.elenco, "diretor" : req.body.diretor, "dataLanc" : req.body.dataLanc, "rank" : req.body.rank, "generos" : req.body.generos, "trailer" : req.body.trailer};
     filmeOp.findOneAndUpdate(query, data, function(erro, data) {
         if(erro) {
             response = {"resultado": "Falha de acesso ao banco de dados"};
             res.json(response);
         } else if (data == null) { 
-            response = {"resultado": "filme inexistente"};
+            response = {"resultado": "Filme inexistente"};
             res.json(response);   
         } else {
-            response = {"resultado": "filme atualizado no BD"};
+            response = {"resultado": "Filme atualizado no banco de dados"};
             res.json(response);   
         }
     })
@@ -284,10 +288,10 @@ router.route('/filmes/:id')   // operacoes sobre um filme(id)
             response = {"resultado": "Falha de acesso ao banco de dados"};
             res.json(response);
         } else if (data == null) {        
-            response = {"resultado": "filme inexistente"};
+            response = {"resultado": "Filme inexistente"};
             res.json(response);
         } else {
-            response = {"resultado": "filme removido do BD"};
+            response = {"resultado": "Filme removido do banco de dados"};
             res.json(response);
         }
     })

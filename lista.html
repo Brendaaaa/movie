@@ -23,11 +23,12 @@
   
   <br><br>
   <table cellspacing="8">
-    <tr> <th>{{hid}}</th>  <th>{{hnome}}</th>  <th>{{hcurso}}</th> </tr>
-    <tr ng-repeat="x in filmes">
-      <td>{{ x.id }}</td>
-      <td>{{ x.titulo }}</td>
-     
+    <tr> <th>{{id}}</th>  <th>{{titulo}}</th>  <th>{{generos}}</th> </tr>
+    <tr ng-repeat="filme in filmes">
+      <td>{{ filme.id }}</td>
+      <td>{{ filme.titulo }}</td>
+      <td>{{ filme.genero }}</td>
+      <td> <img src="{{ filme.trailer }}" alt="{{ filme.titulo }}" style="width:135px;height:185px;" ></td>
     </tr>
   </table>
 
@@ -37,31 +38,29 @@
 <script>
 var app = angular.module('myApp', []);
 app.controller('myCtrl', function($scope, $http) {
-  // ACESSA
-  $scope.acessa = function() {
-     var url = "/filmes";
-     //if ($scope.id != undefined) url = "/lista/" + $scope.id;
-     var request = $http({
-                 "method": "get",
-                  "url": url});
-     request.success(function(reply) {
-        if(reply.filmes != null) {
-          $scope.hid = "id";
-          $scope.htitulo = "Titulo";
-          //$scope.hcurso = "Curso";
-          //$scope.mensagem = "";
-          $scope.filmes = reply.filmes;
-          } else {
-              $scope.clear();
-              $scope.mensagem = reply.resultado;
+    // ACESSA
+    $scope.acessa = function() {
+        var url = "/filmes";
+        //if ($scope.id != undefined) url = "/lista/" + $scope.id;
+        var request = $http({"method": "get", "url": url});
+        request.success(function(reply) {
+            if(reply.filmes != null) {
+                $scope.id = "id";
+                $scope.titulo = "Titulo";
+                $scope.generos = "Gêneros";
+                $scope.trailer = "Trailer";
+              //$scope.mensagem = "";
+                $scope.filmes = reply.filmes;
+            } else {
+                $scope.clear();
+                $scope.mensagem = reply.resultado;
             }
-         }
-      );
-      request.error(function(reply) {
-         alert("Falha na requisicao");
-      }
-    );
-  };
+        });
+    
+        request.error(function(reply) {
+            alert("Falha na requisicao");
+        });
+    };
 
   // INSERE
   $scope.insere = function() {
