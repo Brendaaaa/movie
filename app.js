@@ -194,48 +194,60 @@ router.route('/filmes')   // operacoes sobre todos os filmes
         res.json(response);
     })
 })
-.post(function(req, res) {   // POST (cria)
+.post(function(req, res) {   // POST (cria e busca filmes)
 
-    var query = {"id": req.body.id};
-    var response = {};
-    filmeOp.findOne(query, function(erro, data) {
-        if (data == null) {
-            var db = new filmeOp(); //TODO checar se algum campo obrigatorio esta vazio... || funciona o que eu fiz, agora se alguém quiser modificar a implementação, a vontade
-            //TODO Adicionar todos os campos
-            try {   
-                if(req.body.id == null || req.body.titulo == null){ //TODO remove id como obrigatorio, pq o id eh gerado pelo servidor
-                    //TODO tratar quando o id ja foi usado
-                    throw error;
-                }
-                db.id = req.body.id;
-                db.titulo = req.body.titulo;
-                db.elenco = req.body.elenco;
-                db.diretor = req.body.diretor;
-                db.dataLanc = req.body.dataLanc;
-                db.rank = req.body.rank;
-                db.generos = req.body.generos;
-                db.trailer = req.body.trailer;      
-            } catch(error){
-                response = {"resultado": "Id e titulo sao obrigatorios. Não foi possível inserir o filme no banco de dados"};
-                return res.json(response);
+    if (req.body.busca != null){ //eh um caso de busca
+        var query = {"titulo": req.body.busca};
+        var response = {};
+        filmeOp.find(query, function(erro, data) {
+            if (data != null) {
+                response = {"filmes": data};
+            } else {
+                response = {"resultado": "Sua busca não retornou resultados"};
             }
-            
-
-            db.save(function(erro) {
-                if(erro) {
-                    response = {"resultado": "Um problema ocorreu ao inserir o filme no banco de dados, tente novamente mais tarde."};
-                    res.json(response);
-                } else {
-                    response = {"resultado": "Filme inserido no banco de dados"};
-                    res.json(response);
-                }
-            })
-
-        } else {
-            response = {"resultado": "Filme ja existente"};
             res.json(response);
-        }
-    })
+        })
+    } else {
+        var query = {"id": req.body.id};
+        var response = {};
+        filmeOp.findOne(query, function(erro, data) {
+            if (data == null) {
+                var db = new filmeOp(); //TODO checar se algum campo obrigatorio esta vazio... || funciona o que eu fiz, agora se alguém quiser modificar a implementação, a vontade
+                //TODO Adicionar todos os campos
+                try {   
+                    if(req.body.id == null || req.body.titulo == null){ //TODO remove id como obrigatorio, pq o id eh gerado pelo servidor
+                        //TODO tratar quando o id ja foi usado
+                        throw error;
+                    }
+                    db.id = req.body.id;
+                    db.titulo = req.body.titulo;
+                    db.elenco = req.body.elenco;
+                    db.diretor = req.body.diretor;
+                    db.dataLanc = req.body.dataLanc;
+                    db.rank = req.body.rank;
+                    db.generos = req.body.generos;
+                    db.trailer = req.body.trailer;      
+                } catch(error) {
+                    response = {"resultado": "Id e titulo sao obrigatorios. Não foi possível inserir o filme no banco de dados"};
+                    return res.json(response);
+                }
+            
+                db.save(function(erro) {
+                    if(erro) {
+                        response = {"resultado": "Um problema ocorreu ao inserir o filme no banco de dados, tente novamente mais tarde."};
+                        res.json(response);
+                    } else {
+                        response = {"resultado": "Filme inserido no banco de dados"};
+                        res.json(response);
+                    }
+                })
+
+            } else {
+                response = {"resultado": "Filme ja existente"};
+                res.json(response);
+            }
+        })
+    }
 })//;
 .delete(function(req, res) {
     

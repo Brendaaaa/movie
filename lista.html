@@ -22,15 +22,32 @@
   Resultado: {{mensagem}}
   
   <br><br>
-  <table cellspacing="8">
-    <tr> <th>{{id}}</th>  <th>{{titulo}}</th>  <th>{{generos}}</th> </tr>
-    <tr ng-repeat="filme in filmes">
-      <td>{{ filme.id }}</td>
-      <td>{{ filme.titulo }}</td>
-      <td>{{ filme.genero }}</td>
-      <td> <img src="{{ filme.trailer }}" alt="{{ filme.titulo }}" style="width:135px;height:185px;" ></td>
-    </tr>
-  </table>
+    <table cellspacing="8"> <!-- table with all the movies -->  
+        
+        <tr> <!-- table header -->
+            <th></th>
+            <th>{{secondColunmTitle}}</th>
+        </tr>
+        
+        <tr ng-repeat="filme in filmes"> <!-- each row has information about a movie. The number of rows is defined by the number of movies -->
+        
+            <!-- first column: movie poster -->
+            <td>
+                <img src="{{ filme.trailer }}" alt="{{ filme.titulo }}" style="width:135px;height:185px;" >
+            </td>
+            
+            <!-- second columm: movie details -->
+            <td>
+                <table cellspacing="8">
+                    <tr><td>Id: {{ filme.id }}</td></tr>
+                    <tr><td>Titulo: {{ filme.titulo }}</td><tr>
+                    <tr><td>Generos: {{ filme.generos }}</td></tr>
+                    <tr><td><a href="http://localhost:3000/filmes/{{ filme.id }}"> Detalhes </a> </td></tr>
+                </table>
+            </td>
+        </tr>
+            
+    </table>
 
 </div>
 
@@ -38,17 +55,15 @@
 <script>
 var app = angular.module('myApp', []);
 app.controller('myCtrl', function($scope, $http) {
-    // ACESSA
+    // ACESSA 
     $scope.acessa = function() {
         var url = "/filmes";
         //if ($scope.id != undefined) url = "/lista/" + $scope.id;
         var request = $http({"method": "get", "url": url});
         request.success(function(reply) {
             if(reply.filmes != null) {
-                $scope.id = "id";
-                $scope.titulo = "Titulo";
-                $scope.generos = "Gêneros";
-                $scope.trailer = "Trailer";
+                $scope.clear();
+                $scope.secondColunmTitle = "Informações";
               //$scope.mensagem = "";
                 $scope.filmes = reply.filmes;
             } else {
@@ -63,31 +78,29 @@ app.controller('myCtrl', function($scope, $http) {
     };
 
   // INSERE
-  $scope.insere = function() {
-      $scope.clear();
-      if ($scope.id == undefined || $scope.id.length == 0 ||
+$scope.insere = function() {
+    $scope.clear();
+    if ($scope.id == undefined || $scope.id.length == 0 /* ||
           $scope.nome == undefined || $scope.nome.length == 0 ||
-          $scope.curso == undefined || $scope.curso.length == 0) {
-             $scope.clear();
-             $scope.mensagem = "preencha todos os campos acima";
-             return;
-      }
-      var data = {"id": $scope.id,
+          $scope.curso == undefined || $scope.curso.length == 0*/) {
+        $scope.clear();
+        $scope.mensagem = "preencha todos os campos acima";
+        return;
+    }
+    var data = {"busca": $scope.id/*,
                   "nome": $scope.nome,
-                  "curso": $scope.curso};
-      var request = $http({
-                 "method": "post",
-                 "url": "/filmes",
-                 "data": data});
-      request.success(function(reply) {
+                  "curso": $scope.curso*/};
+    var request = $http({"method": "post", "url": "/filmes", "data": data});
+    request.success(function(reply) {
+        $scope.clear();
         $scope.mensagem = reply.resultado;
-        }
-      );
-      request.error(function(reply) {
+         $scope.filmes = reply.filmes;
+    });
+    
+    request.error(function(reply) {
         alert("Falha na requisicao");
-      }
-    );
-  };
+    });
+};
 
   // ATUALIZA
   $scope.atualiza = function() {
@@ -108,6 +121,7 @@ app.controller('myCtrl', function($scope, $http) {
                  "data": data});
      request.success(function(reply) {
          $scope.mensagem = reply.resultado;
+       //   $scope.filmes = reply.filmes;
          }
       );
       request.error(function(reply) {
