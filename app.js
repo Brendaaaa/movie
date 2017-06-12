@@ -200,7 +200,7 @@ router.route('/filmes')   // operacoes sobre todos os filmes
         var query = {"titulo": req.body.busca};
         var response = {};
         filmeOp.find(query, function(erro, data) {
-            if (data != null) {
+            if (data != null && data.length > 0) {
                 response = {"filmes": data};
             } else {
                 response = {"resultado": "Sua busca não retornou resultados"};
@@ -589,10 +589,26 @@ router.route('/listas/:id')   // operacoes sobre uma lista(id)
             response = {"resultado": "Lista inexistente"};
             res.json(response);
         } else {
-            response = {"listas": [data]};
+            var filmesId = data.filmesId;
+            if (filmesId != null && filmesId.length > 0){
+                var lista = [];
+                for (i = 0; i < filmesId.length; i++){  
+                    var query1 = {"id": filmesId[i]};
+                    
+                    filmeOp.findOne(query1, function(erro2, data2) {
+                        console.log(data2);
+                        lista.push(data2);
+                        console.log(data2);
+                    })
+                    
+                }
+            
+            }
+            console.log(lista)
+            response = {"lista": lista};
             res.json(response);
         }
-    })
+    });
 })
 .put(function(req, res) {   // PUT (altera)
     var response = {};

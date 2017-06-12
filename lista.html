@@ -9,24 +9,22 @@
 
 <div ng-app="myApp" ng-controller="myCtrl">
   <form>
-    id: <input type="text" ng-model="id"><br><br>
-    Nome: <input type="text" ng-model="nome"><br><br>
-    Curso: <input type="text" ng-model="curso"><br><br>
-    <button ng-click="acessa()">ACESSA</button> &nbsp;
-    <button ng-click="insere()">INSERE</button> &nbsp;
-    <button ng-click="atualiza()">ATUALIZA</button> &nbsp;
-    <button ng-click="remove()">REMOVE</button> &nbsp;
+    Busca por título: <input type="text" ng-model="id"><br><br>
+    <button ng-click="acessa()">TODOS</button> &nbsp;
+    <button ng-click="insere()">BUSCA</button> &nbsp;
+  <!--  <button ng-click="atualiza()">ATUALIZA</button> &nbsp;
+    <button ng-click="remove()">REMOVE</button> &nbsp; -->
   </form>
 
   <br><br>
-  Resultado: {{mensagem}}
+  {{mensagem}}  <!-- Displaying results -->
   
   <br><br>
     <table cellspacing="8"> <!-- table with all the movies -->  
         
         <tr> <!-- table header -->
             <th></th>
-            <th>{{secondColunmTitle}}</th>
+            <th>{{cabecalhoTabela}}</th>
         </tr>
         
         <tr ng-repeat="filme in filmes"> <!-- each row has information about a movie. The number of rows is defined by the number of movies -->
@@ -54,20 +52,50 @@
 
 <script>
 var app = angular.module('myApp', []);
-app.controller('myCtrl', function($scope, $http) {
+
+//Service to get data when page loads
+app.service('dataService', function($http){
+    
+    this.getData = function(callbackFunction){
+       
+        $http({
+            "method": "get", "url": "/filmes"
+        }).success(function(reply) {
+            callbackFunction(reply);
+        }).error(function() {
+            reply.resultado = "Houve um problema na requisição. Tente novamente mais tarde."
+            callbackFunction(reply);
+        });
+    }
+});
+
+app.controller('myCtrl', function($scope, $http, dataService) {
+    
+    dataService.getData(function(reply){
+        if(reply.filmes != null) {
+            $scope.cabecalhoTabela = "Informações";
+            $scope.mensagem = "";
+            $scope.filmes = reply.filmes;
+        } else {
+            $scope.cabecalhoTabela = "";
+            $scope.mensagem = reply.resultado;
+            $scope.filmes = [];
+        }
+    });
+    
     // ACESSA 
     $scope.acessa = function() {
-        var url = "/filmes";
+        
+        $scope.clear();
+                
         //if ($scope.id != undefined) url = "/lista/" + $scope.id;
-        var request = $http({"method": "get", "url": url});
+        var request = $http({"method": "get", "url": "/filmes"});
         request.success(function(reply) {
             if(reply.filmes != null) {
-                $scope.clear();
-                $scope.secondColunmTitle = "Informações";
+                $scope.cabecalhoTabela = "Informações";
               //$scope.mensagem = "";
                 $scope.filmes = reply.filmes;
             } else {
-                $scope.clear();
                 $scope.mensagem = reply.resultado;
             }
         });
@@ -76,33 +104,34 @@ app.controller('myCtrl', function($scope, $http) {
             alert("Falha na requisicao");
         });
     };
-
-  // INSERE
-$scope.insere = function() {
-    $scope.clear();
-    if ($scope.id == undefined || $scope.id.length == 0 /* ||
-          $scope.nome == undefined || $scope.nome.length == 0 ||
-          $scope.curso == undefined || $scope.curso.length == 0*/) {
-        $scope.clear();
-        $scope.mensagem = "preencha todos os campos acima";
-        return;
-    }
-    var data = {"busca": $scope.id/*,
-                  "nome": $scope.nome,
-                  "curso": $scope.curso*/};
-    var request = $http({"method": "post", "url": "/filmes", "data": data});
-    request.success(function(reply) {
-        $scope.clear();
-        $scope.mensagem = reply.resultado;
-         $scope.filmes = reply.filmes;
-    });
     
-    request.error(function(reply) {
-        alert("Falha na requisicao");
-    });
-};
+  //  $scope.acessa();
+
+    // INSERE
+    $scope.insere = function() {
+    
+        $scope.clear();
+    
+        if ($scope.id == undefined || $scope.id.length == 0) {
+            $scope.mensagem = "Preencha o campo acima";
+            return;
+        }
+    
+        var data = {"busca": $scope.id };
+        var request = $http({"method": "post", "url": "/filmes", "data": data});
+        request.success(function(reply) {
+            $scope.mensagem = reply.resultado;
+            $scope.filmes = reply.filmes;
+        });
+    
+        request.error(function(reply) {
+            alert("Falha na requisicao");
+        });
+    };
+    
 
   // ATUALIZA
+  /*
   $scope.atualiza = function() {
      $scope.clear();
      if (($scope.id == undefined || $scope.id.length == 0) ||
@@ -130,7 +159,10 @@ $scope.insere = function() {
     );
   };
 
+  */
+  
   // REMOVE
+  /*
   $scope.remove = function() {
      $scope.clear();
      if ($scope.id == undefined || $scope.id.length == 0) {
@@ -147,18 +179,17 @@ $scope.insere = function() {
      );
      request.error(function(reply) {
         alert("Falha na requisicao");
-       }
-     );
+       });
    };
-
-  // CLEAR
-  $scope.clear = function() {
-    $scope.filmes = [];
-    $scope.mensagem = "";
-    $scope.hid = $scope.hnome = $scope.hcurso = "";
-    }
-  }
-);
+*/
+   
+    // CLEAR
+    $scope.clear = function() {
+        $scope.filmes = [];
+        $scope.mensagem = "";
+        $scope.cabecalhoTabela = "";
+    };
+});
 </script> 
 
 </body>
