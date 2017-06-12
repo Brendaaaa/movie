@@ -13,11 +13,7 @@ var mongoOp = require('./models/mongo');
 // adicione "ponteiro" para filme
 var filmeOp = require('./models/filmes');
 
-var notaOp = require('./models/notas');
-
 var usuarioOp = require('./models/usuarios');
-
-var listaOp = require('./models/listaFilmes');
 
 // comente as duas linhas abaixo
 // var index = require('./routes/index');
@@ -207,15 +203,37 @@ router.route('/filmes')   // operacoes sobre todos os filmes
             }
             res.json(response);
         })
+    } else if (req.body.filtro != null){ //eh um caso de filtro
+        var query = {"generos": req.body.filtro};
+        var response = {};
+        filmeOp.find(query, function(erro, data) {
+            if (data != null && data.length > 0) {
+                response = {"filmes": data};
+            } else {
+                response = {"resultado": "Sua busca não retornou resultados"};
+            }
+            res.json(response);
+        })
+    } else if (req.body.lancamento != null){ //eh um caso de filtro
+        var query = {"dataLanc": req.body.lancamento};
+        var response = {};
+        filmeOp.find(query, function(erro, data) {
+            if (data != null && data.length > 0) {
+                response = {"filmes": data};
+            } else {
+                response = {"resultado": "Sua busca não retornou resultados"};
+            }
+            res.json(response);
+        })
     } else {
         var query = {"id": req.body.id};
         var response = {};
         filmeOp.findOne(query, function(erro, data) {
             if (data == null) {
-                var db = new filmeOp(); //TODO checar se algum campo obrigatorio esta vazio... || funciona o que eu fiz, agora se alguém quiser modificar a implementação, a vontade
+                var db = new filmeOp();
                 //TODO Adicionar todos os campos
                 try {   
-                    if(req.body.id == null || req.body.titulo == null){ //TODO remove id como obrigatorio, pq o id eh gerado pelo servidor
+                    if(req.body.id == null || req.body.titulo == null || req.body.elenco == null){ //TODO remove id como obrigatorio, pq o id eh gerado pelo servidor
                         //TODO tratar quando o id ja foi usado
                         throw error;
                     }
@@ -308,117 +326,6 @@ router.route('/filmes/:id')   // operacoes sobre um filme(id)
         }
     })
 });
-
-
-router.route('/notas')   // operacoes sobre todas as notas
-.get(function(req, res) {  // GET
-
-    var response = {};
-    notaOp.find({}, function(erro, data) {    
-        if(erro) {
-            response = {"resultado": "/notas: Falha de acesso ao banco de dados"};
-        } else {
-            response = {"notas": data};
-            res.json(response);
-        }
-    })
-})
-.post(function(req, res) {   // POST (cria)
-    
-    var query = {"id": req.body.id};
-    var response = {};
-    notaOp.findOne(query, function(erro, data) {
-        
-        if (data == null) {
-        
-            var db = new notaOp(); //TODO checar se algum campo obrigatorio esta vazio...|| funciona o que eu fiz, agora se alguém quiser modificar a implementação, a vontade
-            try {
-                if(req.body.id == null || req.body.valor == null || req.body.filmeId == null || req.body.usuarioId == null) {
-                    throw error;
-                }
-                db.id = req.body.id;
-                db.valor = req.body.valor;
-                db.filmeId = req.body.filmeId;
-                db.usuarioId = req.body.usuarioId;
-            } catch(error) {
-                response = {"resultado": "Falha 1 de insercao no BD"};
-                return res.json(response);
-            }
-
-            db.save(function(erro) {
-                if(erro) {
-                    response = {"resultado": "notas: Falha 2 de insercao no BD"};
-                    res.json(response);
-                } else {
-                    response = {"resultado": "Nota inserida no BD"};
-                    res.json(response);
-                }
-            })
-
-        } else {
-            response = {"resultado": "Nota ja existente"};
-            res.json(response);
-        }
-
-    })
-})
-.delete(function(req, res) {  
-    console.log(req.path); 
-    console.log(JSON.stringify(req.body));
-    res.status(200).send('String test');
-});
-
-
-router.route('/notas/:id')   // operacoes sobre uma nota(id)
-.get(function(req, res) {   // GET
-    var response = {};
-    var query = {"id": req.params.id};
-    notaOp.findOne(query, function(erro, data) {
-        if(erro) {
-            response = {"resultado": "Falha de acesso ao banco de dados"};
-            res.json(response);
-        } else if (data == null) {
-            response = {"resultado": "nota inexistente"};
-            res.json(response);   
-        } else {
-            response = {"notas": [data]};
-            res.json(response);
-        }
-    })
-})
-.put(function(req, res) {   // PUT (altera)
-    var response = {};
-    var query = {"id": req.params.id};
-    var data = {"valor" : req.body.valor, "filmeId" : req.body.filmeId, "usuarioId" : req.body.usuarioId};
-    notaOp.findOneAndUpdate(query, data, function(erro, data) {
-        if(erro) {
-            response = {"resultado": "Falha de acesso ao banco de dados"};
-            res.json(response);
-        } else if (data == null) { 
-            response = {"resultado": "nota inexistente"};
-            res.json(response);   
-        } else {
-            response = {"resultado": "nota atualizado no BD"};
-            res.json(response);   
-        }
-    })
-})
-.delete(function(req, res) {   // DELETE (remove)
-    var response = {};
-    var query = {"id": req.params.id};
-    notaOp.findOneAndRemove(query, function(erro, data) {
-        if(erro) {
-            response = {"resultado": "Falha de acesso ao banco de dados"};
-            res.json(response);
-        } else if (data == null) {        
-            response = {"resultado": "nota inexistente"};
-            res.json(response);
-        } else {
-            response = {"resultado": "nota removido do BD"};
-            res.json(response);
-        }
-    })
-});
    
 router.route('/usuarios') 
 .get(function(req, res) {  // GET
@@ -441,14 +348,14 @@ router.route('/usuarios')
         if (data == null) {
             var db = new usuarioOp(); //TODO checar se algum campo obrigatorio esta vazio... || funciona o que eu fiz, agora se alguém quiser modificar a implementação, a vontade
             try {
-                if(req.body.id == null || req.body.username == null || req.body.senha == null || req.body.email == null){
+                if(req.body.id == null ){//|| req.body.username == null || req.body.senha == null || req.body.email == null){
                     throw error;
                 }
                 db.id = req.body.id;
                 db.username = req.body.username;
                 db.senha = req.body.senha;
                 db.email = req.body.email;
-                db.listaId = req.body.id*10;
+                db.lista = req.body.lista;
             } catch(error) {
                 response = {"resultado": "Falha 1 de insercao no BD"};
                 return res.json(response);
@@ -499,9 +406,10 @@ router.route('/usuarios/:id')   // operacoes sobre um usuario(id)
             response = {"resultado": "usuario inexistente"};
             res.json(response);   
         } else {
-            response = {"usuarios": [data]};
+            response = {"usuario": data};
             res.json(response);
         }
+        console.log(response);
     })
 })
 .put(function(req, res) {   // PUT (altera)
@@ -516,7 +424,9 @@ router.route('/usuarios/:id')   // operacoes sobre um usuario(id)
             response = {"resultado": "usuario inexistente"};
             res.json(response);   
         } else {
-            response = {"resultado": "usuario atualizado no BD"};
+
+            response = {"resultado": "SUCESSO",
+                        "usuario" : data}; // cada pagina html coloca uma mensagem de sucesso apropriada "Nota atualizada", "Perfil atualizado"... dado que este método é utilizado por varios
             res.json(response);   
         }
     })
@@ -534,112 +444,6 @@ router.route('/usuarios/:id')   // operacoes sobre um usuario(id)
         } else {
             //deletar lista e notas deste usuario aqui
             response = {"resultado": "usuario removido do BD"};
-            res.json(response);
-        }
-    })
-});
-   
-
-router.route('/listas')   // operacoes sobre todas as listas
-.get(function(req, res) {  // GET
-    var response = {};
-    listaOp.find({}, function(erro, data) {
-        if(erro){
-            response = {"resultado": "Falha de acesso ao banco de dados"};
-        } else {
-            response = {"listas": data}; //TODO message?
-            res.json(response);
-        }
-    })
-})
-.post(function(req, res) {   // POST (cria)
-    var query = {"id": req.body.id};
-    var response = {};
-    listaOp.findOne(query, function(erro, data) {
-        if (data == null) {
-            var db = new listaOp();
-            db.id = req.body.id;
-            db.filmesId = req.body.filmesId; //array de id, mas inicializa com lista vazia
-            db.save(function(erro) {
-                if(erro) {
-                    response = {"resultado": "Falha de insercao no BD"};
-                    res.json(response);
-                } else {
-                    response = {"resultado": "Lista inserido no BD"};
-                    res.json(response);
-                }
-            })
-        } else {
-            response = {"resultado": "Lista ja existente"};
-            res.json(response);
-        }
-     })
-  });
-  //OBs: nao tem pq deletar todas as listas, uma vez q ao deletar um usuario deleta sua lista por id
-
-router.route('/listas/:id')   // operacoes sobre uma lista(id)
-.get(function(req, res) {   // GET
-    var response = {};
-    var query = {"id": req.params.id}; //é uma array nao sei se muda algo
-    listaOp.findOne(query, function(erro, data) {
-        if(erro) {
-            response = {"resultado": "Falha de acesso ao banco de dados"};
-            res.json(response);
-        } else if (data == null) {
-            response = {"resultado": "Lista inexistente"};
-            res.json(response);
-        } else {
-            var filmesId = data.filmesId;
-            if (filmesId != null && filmesId.length > 0){
-                var lista = [];
-                for (i = 0; i < filmesId.length; i++){  
-                    var query1 = {"id": filmesId[i]};
-                    
-                    filmeOp.findOne(query1, function(erro2, data2) {
-                        console.log(data2);
-                        lista.push(data2);
-                        console.log(data2);
-                    })
-                    
-                }
-            
-            }
-            console.log(lista)
-            response = {"lista": lista};
-            res.json(response);
-        }
-    });
-})
-.put(function(req, res) {   // PUT (altera)
-    var response = {};
-    var query = {"id": req.params.id};
-    var data = {"filmesId" : req.body.filmesId};
-    listaOp.findOneAndUpdate(query, data, function(erro, data) {
-        if(erro) {
-            response = {"resultado": "Falha de acesso ao banco de dados"};
-            res.json(response);
-        } else if (data == null) { 
-            response = {"resultado": "Lista inexistente"};
-            res.json(response);   
-        } else {
-            response = {"resultado": "Lista atualizada"}; //TODO maybe we should return the updated version?
-            res.json(response);   
-        }
-    })
-})
-.delete(function(req, res) {   // DELETE (remove)
-    var response = {};
-    var query = {"id": req.params.id};
-    listaOp.findOneAndRemove(query, function(erro, data) {
-        if(erro) {
-            response = {"resultado": "Falha de acesso ao banco de dados"};
-            res.json(response);
-        } else if (data == null) {        
-            response = {"resultado": "Lista inexistente"};
-            res.json(response);
-        } else {
-            //TODOdeletar lista e notas deste usuario aqui
-            response = {"resultado": "Lista removida"};
             res.json(response);
         }
     })
