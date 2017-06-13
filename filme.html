@@ -2,7 +2,7 @@
 <html>
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
 <head>
-	<style type="text/css">
+	<!--<style type="text/css">
 		body {
 			background: black;
 			color: white;
@@ -17,7 +17,7 @@
 		
 		
 
-	</style>
+	</style>-->
 </head>
 <body>
 
@@ -30,7 +30,7 @@
   <form>
     ID: <input type="text" ng-model="id"><br><br>
     Titulo: <input type="text" ng-model="titulo"><br><br>
-    Curso: <input type="text" ng-model="curso"><br><br>
+    <!--Curso: <input type="text" ng-model="curso"><br><br>-->
     <button ng-click="acessa()">ACESSA</button> &nbsp;
 
   </form>
@@ -41,7 +41,8 @@
   <br><br>
   <table cellspacing="8">
     <tr>  <th>{{htitulo}}</th> <th>{{helenco}}</th> <th>{{hdiretor}}</th>  </tr>
-    <tr ng-repeat="x in filmes">
+    <tr ng-repeat="x in filme">
+
       <td><h1>{{ x.titulo }}</h1></td>
       
       <td> {{x.elenco}} </td>
@@ -64,13 +65,14 @@ app.controller('myCtrl', function($scope, $http) {
                  "method": "get",
                   "url": url});
      request.success(function(reply) {
-        if(reply.filmes != null) {
-          
+        $scope.mensagem = reply;
+        if(reply != null) {
+
           $scope.htitulo = "titulo"
           $scope.helenco = "elenco"
           $scope.hdiretor = "diretor"
-         // $scope.mensagem = "";
-          $scope.filmes = reply.filmes;
+          //$scope.mensagem = ;
+          //$scope. = reply;
           } else {
               $scope.clear();
               $scope.mensagem = reply.resultado;

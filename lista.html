@@ -123,13 +123,14 @@ app.controller('myCtrl', function($scope, $http, dataService) {
         $scope.clear();
                 
         //if ($scope.id != undefined) url = "/lista/" + $scope.id;
-        var request = $http({"method": "get", "url": "/usuarios/970"}); //TODO remove id fixo
+        var request = $http({"method": "get", "url": "/usuarios/687"}); //TODO remove id fixo
         request.success(function(reply) {
             if(reply.usuario != null) {
                 $scope.cabecalhoTabela = "Informações";
                 $scope.mensagem = reply.usuario;
                 $scope.lista = reply.usuario.lista;
                 $scope.user = reply.usuario;
+                $scope.mensagem = $scope.user;
             } else {
                 $scope.mensagem = reply.resultado;
             }
@@ -214,10 +215,10 @@ app.controller('myCtrl', function($scope, $http, dataService) {
 
     var request = $http({
                  "method": "put",
-                 "url": "/usuarios/" + 970,
+                 "url": "/usuarios/" + 687,
                  "data": $scope.user});
      request.success(function(reply) {
-         $scope.mensagem = reply.resultado;
+       //  $scope.mensagem = reply.resultado;
          $scope.lista = reply.usuario.lista;
        //   $scope.filmes = reply.filmes;
          }

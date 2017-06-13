@@ -58,7 +58,9 @@ app.use(function(err, req, res, next) {
   res.locals.error = req.app.get('env') === 'development' ? err : {};
 
   // render the error page
-  res.status(err.status || 500);
+  res.status(err.status ||
+  
+   500);
   res.render('error');
 });
 
@@ -66,6 +68,15 @@ module.exports = app;
 
 // codigo abaixo adicionado para o processamento das requisições
 // HTTP GET, POST, PUT, DELETE
+
+function checkAuth(req, res) {
+  cookies = req.cookies;
+  var key = '';
+  if(cookies) key = cookies.EA975;
+  if(key == 'secret') return true;
+  res.json({'resultado': 'Clique em LOGIN para continuar'});
+  return false;
+}
 
 // index.html
 router.route('/') 
@@ -82,6 +93,7 @@ router.route('/')
 
 router.route('/alunos')   // operacoes sobre todos os alunos
   .get(function(req, res) {  // GET
+  if(! checkAuth(req, res)) return;
     var response = {};
     mongoOp.find({}, function(erro, data) {
        if(erro)
@@ -124,6 +136,7 @@ router.route('/alunos')   // operacoes sobre todos os alunos
 
 router.route('/alunos/:ra')   // operacoes sobre um aluno (RA)
   .get(function(req, res) {   // GET
+  if(! checkAuth(req, res)) return;
       var response = {};
       var query = {"ra": req.params.ra};
       mongoOp.findOne(query, function(erro, data) {
@@ -142,6 +155,7 @@ router.route('/alunos/:ra')   // operacoes sobre um aluno (RA)
     }
   )
   .put(function(req, res) {   // PUT (altera)
+  if(! checkAuth(req, res)) return;
       var response = {};
       var query = {"ra": req.params.ra};
       var data = {"nome": req.body.nome, "curso": req.body.curso};
@@ -161,6 +175,7 @@ router.route('/alunos/:ra')   // operacoes sobre um aluno (RA)
     }
   )
   .delete(function(req, res) {   // DELETE (remove)
+  if(! checkAuth(req, res)) return;
         var response = {};
         var query = {"ra": req.params.ra};
         mongoOp.findOneAndRemove(query, function(erro, data) {
@@ -356,32 +371,21 @@ router.route('/usuarios')
                 db.senha = req.body.senha;
                 db.email = req.body.email;
                 db.lista = req.body.lista;
+                
+                db.save(function(erro) {
+                    if(erro) {
+                        response = {"resultado": "Um problema ocorreu ao inserir o usuario no banco de dados, tente novamente mais tarde."};
+                        res.json(response);
+                    } else {
+                        response = {"resultado": "Usuario inserido no banco de dados"};
+                        res.json(response);
+                    }
+                })
+            
             } catch(error) {
                 response = {"resultado": "Falha 1 de insercao no BD"};
                 return res.json(response);
             }
-
-            //TODO criar lista = e pegar seu respectivo ID || funciona o que eu fiz, agora se alguém quiser modificar a implementação, a vontade
-            var db2 = new listaOp();
-            db2.id = req.body.id*10;
-            db2.filmesId = null; //array de id, mas inicializa com lista vazia
-            db2.save(function(erro) {
-                if(erro) {
-                    response = {"resultado": "Falha 2 de insercao no BD"};
-                    res.json(response);
-                } else {
-                    //so tenta salvar o usuario se conseguiu criar a lista...
-                    db.save(function(erro) {
-                        if(erro) {
-                            response = {"resultado": "Falha 3 de insercao no BD"};
-                            res.json(response);
-                        } else {
-                            response = {"resultado": "usuario inserido no BD"};
-                            res.json(response);
-                        }
-                    })
-                }
-            })           
         } else {
             response = {"resultado": "usuario ja existente"};
             res.json(response);
@@ -414,9 +418,10 @@ router.route('/usuarios/:id')   // operacoes sobre um usuario(id)
 })
 .put(function(req, res) {   // PUT (altera)
     var response = {};
-    var query = {"id": req.params.id};
+    var query = {"lista.id": "547"};
     var data = {"username" : req.body.username, "senha" : req.body.senha, "email" : req.body.email};
-    usuarioOp.findOneAndUpdate(query, data, function(erro, data) {
+   // usuarioOp.findOneAndUpdate({ id: req.body.id }, req.body, { upsert: true, new: true }, function(erro, data) {
+    usuarioOp.findOneAndRemove(query, function(erro, data) {
         if(erro) {
             response = {"resultado": "Falha de acesso ao banco de dados"};
             res.json(response);
@@ -448,3 +453,44 @@ router.route('/usuarios/:id')   // operacoes sobre um usuario(id)
         }
     })
 });
+
+router.route('/authentication')   // autenticação
+  .get(function(req, res) {  // GET
+     var path = 'auth.html';
+     res.header('Cache-Control', 'no-cache');
+     res.sendfile(path, {"root": "./"});
+     }
+  )
+  .post(function(req, res) { 
+     console.log(JSON.stringify(req.body));
+     var user = req.body.user;
+     var pass = req.body.pass;
+     // verifica usuario e senha na base de dados
+     
+     
+     var response = {};
+     var query = {"username": user, "senha": pass};
+     usuarioOp.findOne(query, function(erro, data) {
+        if(erro) {
+            response = {"resultado": "Falha de acesso ao banco de dados"};
+            res.json(response);
+        } else if (data == null) {
+            response = {"resultado": "usuario inexistente ou senha invalida"};
+    		res.status(401).send('eq.body.pass');   // unauthorized
+        } else {
+            response = {"usuarios": [data]};
+			if(user == data.username && pass == data.senha) {
+	  			res.cookie('EA975', 'secret', {'maxAge': 3600000*24*5});
+	  			res.status(200).send('/lista.html"');  // OKss
+      		} else {
+	  			res.status(401).send('eq.body.pass');   // unauthorized
+      		}
+        }
+       })
+     }
+  )
+  .delete(function(req, res) {
+     res.clearCookie('EA975');	 // remove cookie no cliente
+     res.json({'resultado': 'Sucesso'});
+     }
+  );
