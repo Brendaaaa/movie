@@ -30,8 +30,8 @@ app.controller('myCtrl', function($scope, $http) {
                  "url": url,
                  "data": data});
      request.success(function(reply, status) {
-        $scope.result = "Sucesso";
-        window.open("/usuario.html", "_blank");
+        $scope.result = $scope.user;
+        var newWindow=window.open("/usuario.html?id_pass=" + $scope.user, "_blank");
         }
       );
       request.error(function(reply, status) {
