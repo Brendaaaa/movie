@@ -29,7 +29,7 @@
 <div ng-app="myApp" ng-controller="myCtrl">
   <form>
     ID: <input type="text" ng-model="id"><br><br>
-    Titulo: <input type="text" ng-model="titulo"><br><br>
+
     <!--Curso: <input type="text" ng-model="curso"><br><br>-->
     <button ng-click="acessa()">ACESSA</button> &nbsp;
 
@@ -43,7 +43,7 @@
     <tr>  <th>{{htitulo}}</th> <th>{{helenco}}</th> <th>{{hdiretor}}</th>  </tr>
     <tr ng-repeat="x in filme">
 
-      <td><h1>{{ x.titulo }}</h1></td>
+      <td>{{ x.titulo }}</td>
       
       <td> {{x.elenco}} </td>
       <td>{{x.diretor}}</td>
@@ -67,7 +67,7 @@ app.controller('myCtrl', function($scope, $http) {
      request.success(function(reply) {
         $scope.mensagem = reply;
         if(reply != null) {
-
+          $scope.filme = reply.filme;
           $scope.htitulo = "titulo"
           $scope.helenco = "elenco"
           $scope.hdiretor = "diretor"
