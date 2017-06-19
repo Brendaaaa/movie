@@ -8,6 +8,7 @@
 <br>
 
 <div ng-app="myApp" ng-controller="myCtrl">
+    
     <form>
         Busca por título: <input type="text" ng-model="barraPesquisa"> &nbsp;
         <button ng-click="busca()">BUSCA</button> &nbsp;
@@ -27,7 +28,7 @@
     <a href="#" id="Romance" data-ng-click="filtrar($event)"> Terror</a> &nbsp;
     <a href="#" id="Lançamento" data-ng-click="lancamento()"> Lançamentos</a> &nbsp;
   
-  <br><br>
+    <br><br>
     <table cellspacing="8"> <!-- table with all the movies -->  
         
         <tr> <!-- table header -->
@@ -55,28 +56,19 @@
             
     </table>
 
-      <br><br>
-    <table cellspacing="8"> <!-- table with all the movies -->  
+    <br><br>
+    <table cellspacing="8"> <!-- movie list -->  
         
         <tr> <!-- table header -->
             <th></th>
             <th>{{cabecalhoTabela}}</th>
         </tr>
         
-        <tr ng-repeat="item in lista"> <!-- each row has information about a movie. The number of rows is defined by the number of movies -->
+        <tr ng-repeat="item in lista"> <!-- each row has movie title and score -->
         
-            <!-- first column: movie poster -->
-            
-            <!-- second columm: movie details -->
-            <td>
-                <table cellspacing="8">
-                    <tr><td>Id: {{ item.filmeId }}</td></tr>
-                    <tr><td>Titulo: {{ item.titulo }}</td><tr>
-                    <tr><td>Generos: {{ item.nota }}</td></tr>
-                    <tr><td><a href="#" id="{{ item.filmeId }}" data-ng-click="removerNota($event)"> Remover nota</a> </td></tr>
-
-                </table>
-            </td>
+            <td>Titulo: {{ item.titulo }}</td>
+            <td>Nota: {{ item.nota }}</td>
+            <td><a href="#" id="{{ item.filmeId }}" data-ng-click="removerNota($event)"> Remover nota</a> </td>
         </tr>
             
     </table>
@@ -120,13 +112,16 @@ app.controller('myCtrl', function($scope, $http, dataService) {
     // Listing movies added to personal list 
     $scope.lista = function() {
         
+        $scope.cabecalhoTabela = "";
+        $scope.tituloLista = "";
+        
         $scope.clear();
                 
         //if ($scope.id != undefined) url = "/lista/" + $scope.id;
-        var request = $http({"method": "get", "url": "/usuarios/687"}); //TODO remove id fixo
+        var request = $http({"method": "get", "url": "/usuarios/977"}); //TODO remove id fixo
         request.success(function(reply) {
             if(reply.usuario != null) {
-                $scope.cabecalhoTabela = "Informações";
+                $scope.tituloLista = "Meus filmes";
                 $scope.mensagem = reply.usuario;
                 $scope.lista = reply.usuario.lista;
                 $scope.user = reply.usuario;
@@ -143,6 +138,8 @@ app.controller('myCtrl', function($scope, $http, dataService) {
     
     // Searching movies by name
     $scope.busca = function() {
+    
+        $scope.tituloLista = "";
     
         $scope.clear();
     
@@ -167,6 +164,7 @@ app.controller('myCtrl', function($scope, $http, dataService) {
     $scope.filtrar = function(data) {
     
         $scope.clear();
+        $scope.tituloLista = "Meus filmes";
         
         $scope.mensagem = data.target.id;
     
@@ -204,30 +202,36 @@ app.controller('myCtrl', function($scope, $http, dataService) {
     // Remove score
     $scope.removerNota = function(data) {
     
-    for (i = 0; i < $scope.lista.length; i++) {
-        if ($scope.lista[i].filmeId == data.target.id){
-            $scope.lista[i] = null
+        var novaLista = new Array();
+        for (i = 0; i < $scope.lista.length; i++) {
+            if ($scope.lista[i].filmeId != data.target.id){
+                novaLista.push($scope.lista[i]);
+            }
         }
-    }
     
-    $scope.user.lista = $scope.lista;
-    $scope.mensagem = $scope.user;
+        $scope.user.lista = novaLista;
+        $scope.mensagem = "";//$scope.user;
+        $scope.lista = [];
 
-    var request = $http({
-                 "method": "put",
-                 "url": "/usuarios/" + 687,
-                 "data": $scope.user});
-     request.success(function(reply) {
-       //  $scope.mensagem = reply.resultado;
-         $scope.lista = reply.usuario.lista;
-       //   $scope.filmes = reply.filmes;
-         }
-      );
-      request.error(function(reply) {
-        alert("Falha na requisicao");
-       }
-    );
-  };
+        var request = $http({"method": "put",
+                             "url": "/usuarios/" + 977, //TODO remove fixo
+                             "data": {"usuario" : $scope.user}});
+        
+        request.success(function(reply) {
+            if (reply.resultado == "SUCESSO"){
+                $scope.mensagem = "Nota removida";
+                $scope.lista = reply.usuario.lista;
+            } else {
+                $scope.mensagem = reply.resultado;
+                $scope.lista = reply.usuario.lista;
+            }
+        });
+        
+        request.error(function(reply) {
+            alert("Falha na requisicao");
+        });
+    
+    };
 
   
   
@@ -258,6 +262,7 @@ app.controller('myCtrl', function($scope, $http, dataService) {
         $scope.filmes = [];
         $scope.mensagem = "";
         $scope.cabecalhoTabela = "";
+        $scope.tituloLista = "Meus filmes";
     };
 });
 </script> 
