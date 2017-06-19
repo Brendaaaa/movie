@@ -200,7 +200,7 @@ router.route('/filmes')   // operacoes sobre todos os filmes
         if(erro){
             response = {"resultado": "Falha de acesso ao banco de dados"};
         } else {
-            response = {"filmes": data};
+            response = {"filmes": data}; //TODO ter generos na forma d string....
         }
         res.json(response);
     })
@@ -230,7 +230,7 @@ router.route('/filmes')   // operacoes sobre todos os filmes
             res.json(response);
         })
     } else if (req.body.lancamento != null){ //eh um caso de filtro
-        var query = {"dataLanc": req.body.lancamento};
+        var query = {"ano": req.body.lancamento};
         var response = {};
         filmeOp.find(query, function(erro, data) {
             if (data != null && data.length > 0) {
@@ -248,18 +248,18 @@ router.route('/filmes')   // operacoes sobre todos os filmes
                 var db = new filmeOp();
                 //TODO Adicionar todos os campos
                 try {   
-                    if(req.body.id == null || req.body.titulo == null || req.body.elenco == null){ //TODO remove id como obrigatorio, pq o id eh gerado pelo servidor
+                    if(req.body.id == null || req.body.titulo == null || req.body.ano == null || req.body.diretor == null || req.body.sinopse == null || req.body.poster == null || req.body.generos == null || req.body.critica == null){ //TODO remove id como obrigatorio, pq o id eh gerado pelo servidor
                         //TODO tratar quando o id ja foi usado
                         throw error;
                     }
                     db.id = req.body.id;
                     db.titulo = req.body.titulo;
-                    db.elenco = req.body.elenco;
+                    db.ano = req.body.ano;
                     db.diretor = req.body.diretor;
-                    db.dataLanc = req.body.dataLanc;
-                    db.rank = req.body.rank;
+                    db.sinopse = req.body.sinopse;
+                    db.poster = req.body.poster;
                     db.generos = req.body.generos;
-                    db.trailer = req.body.trailer;      
+                    db.critica = req.body.critica;      
                 } catch(error) {
                     response = {"resultado": "Id e titulo sao obrigatorios. Não foi possível inserir o filme no banco de dados"};
                     return res.json(response);
@@ -311,7 +311,7 @@ router.route('/filmes/:id')   // operacoes sobre um filme(id)
 .put(function(req, res) {   // PUT (altera)
     var response = {};
     var query = {"id": req.params.id};
-    var data = {"titulo" : req.body.titulo, "elenco" : req.body.elenco, "diretor" : req.body.diretor, "dataLanc" : req.body.dataLanc, "rank" : req.body.rank, "generos" : req.body.generos, "trailer" : req.body.trailer};
+    var data = req.body;
     filmeOp.findOneAndUpdate(query, data, function(erro, data) {
         if(erro) {
             response = {"resultado": "Falha de acesso ao banco de dados"};
@@ -355,7 +355,7 @@ router.route('/usuarios')
         }
     })
 })
-.post(function(req, res) {   // POST (cria)
+.post(function(req, res) { // POST (cria)
 
     var query = {"id": req.body.id};
     var response = {};
@@ -397,7 +397,7 @@ router.route('/usuarios')
     console.log(JSON.stringify(req.body));
     res.status(200).send('String test');
 });
-   
+
 router.route('/usuarios/:id')   // operacoes sobre um usuario(id)
 .get(function(req, res) {   // GET
     var response = {};
@@ -418,18 +418,15 @@ router.route('/usuarios/:id')   // operacoes sobre um usuario(id)
 })
 .put(function(req, res) {   // PUT (altera)
     var response = {};
-    var query = {"lista.id": "547"};
-    var data = {"username" : req.body.username, "senha" : req.body.senha, "email" : req.body.email};
-   // usuarioOp.findOneAndUpdate({ id: req.body.id }, req.body, { upsert: true, new: true }, function(erro, data) {
-    usuarioOp.findOneAndRemove(query, function(erro, data) {
-        if(erro) {
+    var query = {"id": req.params.id};
+    usuarioOp.findOneAndUpdate(query, req.body.usuario, { new: true }, function(erro, data) {
+        if(erro != null) {
             response = {"resultado": "Falha de acesso ao banco de dados"};
             res.json(response);
         } else if (data == null) { 
-            response = {"resultado": "usuario inexistente"};
+            response = {"resultado": "O usuário que você tentou alterar, não existe"};
             res.json(response);   
         } else {
-
             response = {"resultado": "SUCESSO",
                         "usuario" : data}; // cada pagina html coloca uma mensagem de sucesso apropriada "Nota atualizada", "Perfil atualizado"... dado que este método é utilizado por varios
             res.json(response);   
@@ -493,4 +490,4 @@ router.route('/authentication')   // autenticação
      res.clearCookie('EA975');	 // remove cookie no cliente
      res.json({'resultado': 'Sucesso'});
      }
-  );
+);

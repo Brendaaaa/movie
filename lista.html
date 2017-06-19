@@ -3,90 +3,76 @@
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
 <body>
 
-<h1>Lista de filmes</h1>
-
 <br>
 
 <div ng-app="myApp" ng-controller="myCtrl">
-    <form>
-        Busca por título: <input type="text" ng-model="barraPesquisa"> &nbsp;
-        <button ng-click="busca()">BUSCA</button> &nbsp;
-        <button ng-click="lista()">MINHA LISTA</button> &nbsp;
-    </form>
+    
+    <h1>{{titulo}}</h1>
+    
+    <div>
+        <a href="http://localhost:3000/lista.html">Início</a> &nbsp;
+        <a href="javascript:void(0)" data-ng-click="lista()">Minha lista</a> &nbsp;
+        <a href="javascript:void(0)" data-ng-click="logout()">Logout</a> &nbsp; <!-- TODO logout -->
+    </div>
 
     <br><br>
-    {{mensagem}}  <!-- Displaying results -->
-    <br><br>
-    {{t}}
-    <br><br>
-    <a href="#" id="Ação" data-ng-click="filtrar($event)"> Ação</a> &nbsp;
-    <a href="#" id="Comédia" data-ng-click="filtrar($event)"> Comédia</a> &nbsp;
-    <a href="#" id="Drama" data-ng-click="filtrar($event)"> Drama</a> &nbsp;
-    <a href="#" id="Ficção" data-ng-click="filtrar($event)"> Ficção</a> &nbsp;
-    <a href="#" id="Romance" data-ng-click="filtrar($event)"> Romance</a> &nbsp;
-    <a href="#" id="Romance" data-ng-click="filtrar($event)"> Terror</a> &nbsp;
-    <a href="#" id="Lançamento" data-ng-click="lancamento()"> Lançamentos</a> &nbsp;
-  
-  <br><br>
-    <table cellspacing="8"> <!-- table with all the movies -->  
+    
+    <div id="inicio">
+        <form>
+            Busca por título: <input type="text" ng-model="barraPesquisa"> &nbsp;
+            <button ng-click="busca()">BUSCA</button> &nbsp;
+        </form>
         
-        <tr> <!-- table header -->
-            <th></th>
-            <th>{{cabecalhoTabela}}</th>
-        </tr>
-        
-        <tr ng-repeat="filme in filmes"> <!-- each row has information about a movie. The number of rows is defined by the number of movies -->
-        
-            <!-- first column: movie poster -->
-            <td>
-                <img src="{{ filme.trailer }}" alt="{{ filme.titulo }}" style="width:135px;height:185px;" >
-            </td>
-            
-            <!-- second columm: movie details -->
-            <td>
-                <table cellspacing="8">
-                    <tr><td>Id: {{ filme.id }}</td></tr>
-                    <tr><td>Titulo: {{ filme.titulo }}</td><tr>
-                    <tr><td>Generos: {{ filme.generos }}</td></tr>
-                    <tr><td><a href="http://localhost:3000/filmes/{{ filme.id }}"> Detalhes </a> </td></tr>
-                </table>
-            </td>
-        </tr>
-            
-    </table>
+        <a href="javascript:void(0)" id="Ação" data-ng-click="filtrar($event)"> Ação</a> &nbsp;
+        <a href="javascript:void(0)" id="Comédia" data-ng-click="filtrar($event)"> Comédia</a> &nbsp;
+        <a href="javascript:void(0)" id="Drama" data-ng-click="filtrar($event)"> Drama</a> &nbsp;
+        <a href="javascript:void(0)" id="Ficção" data-ng-click="filtrar($event)"> Ficção</a> &nbsp;
+        <a href="javascript:void(0)" id="Romance" data-ng-click="filtrar($event)"> Romance</a> &nbsp;
+        <a href="javascript:void(0)" id="Terror" data-ng-click="filtrar($event)"> Terror</a> &nbsp;
+        <a href="javascript:void(0)" id="Lançamento" data-ng-click="lancamento()"> Lançamentos</a> &nbsp;
 
-      <br><br>
-    <table cellspacing="8"> <!-- table with all the movies -->  
+        <br><br>
+        {{mensagem}}  <!-- Displaying results -->
+        <br><br>
         
-        <tr> <!-- table header -->
-            <th></th>
-            <th>{{cabecalhoTabela}}</th>
-        </tr>
+        <table cellspacing="8"> <!-- table with all the movies --> 
+            <tr ng-repeat="filme in filmes"> <!-- each row has information about a movie -->
         
-        <tr ng-repeat="item in lista"> <!-- each row has information about a movie. The number of rows is defined by the number of movies -->
-        
-            <!-- first column: movie poster -->
+                <!-- first column: movie poster -->
+                <td>
+                    <img src="{{ filme.poster }}" alt="{{ filme.titulo }}" style="width:135px;height:185px;" >
+                </td>
             
-            <!-- second columm: movie details -->
-            <td>
-                <table cellspacing="8">
-                    <tr><td>Id: {{ item.filmeId }}</td></tr>
-                    <tr><td>Titulo: {{ item.titulo }}</td><tr>
-                    <tr><td>Generos: {{ item.nota }}</td></tr>
-                    <tr><td><a href="#" id="{{ item.filmeId }}" data-ng-click="removerNota($event)"> Remover nota</a> </td></tr>
+                <!-- second columm: movie details -->
+                <td>
+                    <table cellspacing="8">
+                        <tr><td>Titulo: {{ filme.titulo }}</td><tr>
+                        <tr><td>Generos: {{ filme.generos }}</td></tr>
+                        <tr><td><a href="http://localhost:3000/filmes/{{ filme.id }}"> Detalhes </a> </td></tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+        
+    </div>
 
-                </table>
-            </td>
-        </tr>
-            
-    </table>
+    <div id="lista">
+        {{mensagem}}
+    
+        <table cellspacing="8"> <!-- movie list -->
+            <tr ng-repeat="item in lista"> <!-- each row has movie title and score -->
+                <td>Titulo: {{ item.titulo }}</td>
+                <td>Nota: {{ item.nota }}</td>
+                <td><a href="javascript:void(0)" id="{{ item.filmeId }}" data-ng-click="removerNota($event)"> Remover nota</a> </td>
+            </tr>
+        </table>
+    </div>
     
 </div>
 
 
 <script>
 var app = angular.module('myApp', []);
-
 //Service to get data when page loads
 app.service('dataService', function($http){
     
@@ -102,16 +88,20 @@ app.service('dataService', function($http){
         });
     }
 });
-
 app.controller('myCtrl', function($scope, $http, dataService) {
     
     dataService.getData(function(reply){
+        document.getElementById('inicio').style.display='block';
+        document.getElementById('lista').style.display='none';
+        $scope.titulo = "Filmes"
         if(reply.filmes != null) {
-            $scope.cabecalhoTabela = "Informações";
-            $scope.mensagem = "";
             $scope.filmes = reply.filmes;
+            if ($scope.filmes.length == 0){
+                $scope.mensagem = "Não há filmes disponíveis";
+            } else {
+                $scope.mensagem = "";
+            }
         } else {
-            $scope.cabecalhoTabela = "";
             $scope.mensagem = reply.resultado;
             $scope.filmes = [];
         }
@@ -120,17 +110,16 @@ app.controller('myCtrl', function($scope, $http, dataService) {
     // Listing movies added to personal list 
     $scope.lista = function() {
         
-        $scope.clear();
-                
-        //if ($scope.id != undefined) url = "/lista/" + $scope.id;
-        var request = $http({"method": "get", "url": "/usuarios/687"}); //TODO remove id fixo
+        $scope.prepareForList();
+            
+        var request = $http({"method": "get", "url": "/usuarios/977"}); //TODO remove id fixo
         request.success(function(reply) {
             if(reply.usuario != null) {
-                $scope.cabecalhoTabela = "Informações";
-                $scope.mensagem = reply.usuario;
                 $scope.lista = reply.usuario.lista;
                 $scope.user = reply.usuario;
-                $scope.mensagem = $scope.user;
+                if ($scope.lista.length == 0) {
+                    $scope.mensagem = "Sua lista ainda está vazia"; //TODO remove
+                }
             } else {
                 $scope.mensagem = reply.resultado;
             }
@@ -143,8 +132,7 @@ app.controller('myCtrl', function($scope, $http, dataService) {
     
     // Searching movies by name
     $scope.busca = function() {
-    
-        $scope.clear();
+        $scope.prepareForHome();
     
         if ($scope.barraPesquisa == undefined || $scope.barraPesquisa.length == 0) {
             $scope.mensagem = "Preencha o campo de busca";
@@ -162,14 +150,10 @@ app.controller('myCtrl', function($scope, $http, dataService) {
             alert("Falha na requisicao");
         });
     };
-
     // Filtering movies by genre
     $scope.filtrar = function(data) {
     
-        $scope.clear();
-        
-        $scope.mensagem = data.target.id;
-    
+        $scope.prepareForHome();
         var data = {"filtro": data.target.id };
         var request = $http({"method": "post", "url": "/filmes", "data": data});
         request.success(function(reply) {
@@ -185,11 +169,9 @@ app.controller('myCtrl', function($scope, $http, dataService) {
     // Getting recent movies
     $scope.lancamento = function(data) {
     
-        $scope.clear();
+        $scope.prepareForHome();
         
-        $scope.mensagem = data.target.id;
-    
-        var data = {"lançamentos": "2017" };
+        var data = {"lancamento": "2017" };
         var request = $http({"method": "post", "url": "/filmes", "data": data});
         request.success(function(reply) {
             $scope.mensagem = reply.resultado;
@@ -200,64 +182,54 @@ app.controller('myCtrl', function($scope, $http, dataService) {
             alert("Falha na requisicao");
         });
     };
-
     // Remove score
     $scope.removerNota = function(data) {
-    
-    for (i = 0; i < $scope.lista.length; i++) {
-        if ($scope.lista[i].filmeId == data.target.id){
-            $scope.lista[i] = null
+        var novaLista = new Array();
+        for (i = 0; i < $scope.lista.length; i++) {
+            if ($scope.lista[i].filmeId != data.target.id){
+                novaLista.push($scope.lista[i]);
+            }
         }
-    }
+        $scope.user.lista = novaLista;
+        $scope.prepareForList();
+        
+        var request = $http({"method": "put",
+                             "url": "/usuarios/" + 977, //TODO remove fixo
+                             "data": {"usuario" : $scope.user}});
+        
+        request.success(function(reply) {
+            if (reply.resultado == "SUCESSO"){
+                $scope.mensagem = "Nota removida";
+                $scope.lista = reply.usuario.lista;
+            } else {
+                $scope.mensagem = reply.resultado;
+            }
+        });
+        
+        request.error(function(reply) {
+            alert("Falha na requisicao");
+        });
     
-    $scope.user.lista = $scope.lista;
-    $scope.mensagem = $scope.user;
-
-    var request = $http({
-                 "method": "put",
-                 "url": "/usuarios/" + 687,
-                 "data": $scope.user});
-     request.success(function(reply) {
-       //  $scope.mensagem = reply.resultado;
-         $scope.lista = reply.usuario.lista;
-       //   $scope.filmes = reply.filmes;
-         }
-      );
-      request.error(function(reply) {
-        alert("Falha na requisicao");
-       }
-    );
-  };
-
-  
-  
-  // REMOVE
-  /*
-  $scope.remove = function() {
-     $scope.clear();
-     if ($scope.id == undefined || $scope.id.length == 0) {
-         $scope.clear();
-         $scope.mensagem = "preencha o id do aluno";
-         return;
-     }
-     var request = $http({
-                 "method": "delete",
-                 "url": "/filmes/" + $scope.id});
-     request.success(function(reply) {
-         $scope.mensagem = reply.resultado;
-       }
-     );
-     request.error(function(reply) {
-        alert("Falha na requisicao");
-       });
-   };
-*/
-   
+    };
+    $scope.prepareForList = function() {
+        document.getElementById('inicio').style.display='none';
+        document.getElementById('lista').style.display='block';
+        $scope.clear("Meus filmes");
+    };
+    
+    $scope.prepareForHome = function() {
+        document.getElementById('inicio').style.display='block';
+        document.getElementById('lista').style.display='none';
+        $scope.clear("Filmes");
+    };
+    
     // CLEAR
-    $scope.clear = function() {
+    $scope.clear = function(titulo) {
         $scope.filmes = [];
+        $scope.lista = [];
         $scope.mensagem = "";
-        $scope.cabecalhoTabela = "";
+       // $scope.user = [];
+        $scope.titulo = titulo;
     };
 });
 </script> 

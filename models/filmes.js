@@ -4,11 +4,11 @@ var schema = mongoose.Schema;
 var filmeSchema = {
 	"id": Number,
 	"titulo": String,
-	"elenco": String,
+	"ano": String,
 	"diretor": String,
-	"dataLanc": Date,
-	"rank": Number,
+	"sinopse": String,
+	"poster": String,
 	"generos": [String],
-	"trailer": String
+	"critica": String
 };
 module.exports = mongoose.model('filmes', filmeSchema); // associating schema to collection 'filmes'

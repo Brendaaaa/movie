@@ -1,0 +1,15 @@
+
+
+{ "id": "25", "titulo": "Estômago", "ano": "2007", "diretor": "Marcos Jorge", "sinopse": "A cunning man discovers they way to the world's good graces is through people's stomachs in this witty drama from filmmaker Marcos Jorge. Raimundo Nonato (Joao Miguel) has a hard time behind bars until he starts putting is culinary talents to work, preparing tasty meals for his violent cellmates and using his cooking to win the friendship of feared enforcer Bujiu (Babu Santana).", "poster" : "https://goo.gl/nw0yMx", "generos": ["Drama", "Comédia"], "critica": "8.5"}
+
+{"id":"26", "titulo": "Warrior", "ano": "2011", "diretor": "Gavin O Connor", "sinopse":"Haunted by a tragic past, a former wrestling prodigy, Tommy blazes a path toward the championship while his brother, Brendan (Edgerton), an ex-fighter-turned teacher, returns to the ring in a desperate bid to save his family from financial ruin. The two brothers must finally confront each other and the forces that pulled them apart in this drama from Gavin O Connor", "poster": "https://goo.gl/XZOTpb", "generos": ["Ação", "Drama"], "critica": "8.2"}
+
+{"id":"27", "titulo": "Wonder Woman", "ano": "2017", "diretor": "Patty Jenkins", "sinopse":"Before she was Wonder Woman she was Diana, princess of the Amazons, trained warrior. When a pilot crashes and tells of conflict in the outside world, she leaves home to fight a war to end all wars, discovering her full powers and true destiny.", "poster": "https://goo.gl/ecujW2", "generos": ["Ação", "Drama"], "critica": "8.2"}
+
+{"id":"28", "titulo": "Crazy, Stupid, Love", "ano": "2011", "diretor": "John Requa", "sinopse":"A middle-aged husband's life changes dramatically when his wife asks him for a divorce. He seeks to rediscover his manhood with the help of a newfound friend, Jacob, learning to pick up girls at bars.", "poster": "https://goo.gl/yT7rrM", "generos": ["Comédia", "Romance", "Drama"], "critica": "7.4"}
+
+
+
+
+
+{"id":"977", "lista": [{"filmeId":"57","titulo":"jjj","nota":"3"}, {"filmeId":"7","titulo":"kkkk","nota":"9"}, {"filmeId":"78","titulo":"llll","nota":"3"}] }
