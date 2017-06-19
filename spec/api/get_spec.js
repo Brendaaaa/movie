@@ -28,3 +28,12 @@ frisby.create('testa o metodo get com RA invalido')
       resultado: "aluno inexistente"
   })
 .toss();
+
+frisby.create('testa o metodo get filmes')
+  .get('http://localhost:3000/filmes')
+  .expectStatus(200)
+  .expectHeaderContains('Content-Type', 'application/json')
+  .expectJSON({
+      resultado: "aluno inexistente"
+  })
+.toss();

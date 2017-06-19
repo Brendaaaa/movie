@@ -11,8 +11,8 @@
     
     <div>
         <a href="http://localhost:3000/lista.html">Início</a> &nbsp;
-        <a href="javascript:void(0)" ng-click="listar()">Minha lista</a> &nbsp;
-        <a href="javascript:void(0)" ng-click="logout()">Logout</a> &nbsp; <!-- TODO logout -->
+        <a href="javascript:void(0)" data-ng-click="lista()">Minha lista</a> &nbsp;
+        <a href="javascript:void(0)" data-ng-click="logout()">Logout</a> &nbsp; <!-- TODO logout -->
     </div>
 
     <br><br>
@@ -108,7 +108,7 @@ app.controller('myCtrl', function($scope, $http, dataService) {
     });
     
     // Listing movies added to personal list 
-    $scope.listar = function() {
+    $scope.lista = function() {
         
         $scope.prepareForList();
             
