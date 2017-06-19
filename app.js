@@ -355,7 +355,7 @@ router.route('/usuarios')
         }
     })
 })
-.post(function(req, res) {   // POST (cria)
+.post(function(req, res) { // POST (cria)
 
     var query = {"id": req.body.id};
     var response = {};
@@ -398,47 +398,6 @@ router.route('/usuarios')
     res.status(200).send('String test');
 });
 
-router.route('/usuarios/:id/filme/:filmeId')
-.delete(function(req, res) {   // Remover filme da lista
-    var response = {};
-    var query = {"id" : req.params.id, "lista.filmeId": req.params.filmeId};
-    console.log("aqui0000")
-    onsole.log(req.body)
-    console.log("aqui1")
-    console.log(req.params)
-  //  console.log(req.body.usuario)
-    
-   // var data = req.body.usuario//{"username" : req.body.username, "senha" : req.body.senha, "email" : req.body.email};
-   // usuarioOp.findOneAndUpdate({ id: req.body.id }, req.body, { upsert: true, new: true }, function(erro, data) {
-    usuarioOp.findOne(query, function(erro, data) {
-         console.log("aqui222222")
-          console.log(data)
-        if(erro) {
-            response = {"resultado": "Falha de acesso ao banco de dados"};
-            res.json(response);
-        } else if (data == null) { 
-            response = {"resultado": "usuario inexistente"};
-            res.json(response);   
-        } else {
-
-            data.lista.findOneAndRemove({"filmeId": req.params.filmeId}, function(erro, data) {
-            console.log("aqui222222")
-          console.log(data)
-            if(erro) {
-                response = {"resultado": "Falha de acesso ao banco de dados"};
-                res.json(response);
-                
-            }
-                
-            } );
-            response = {"resultado": "SUCESSO",
-                        "usuario" : data}; // cada pagina html coloca uma mensagem de sucesso apropriada "Nota atualizada", "Perfil atualizado"... dado que este método é utilizado por varios
-            res.json(response);   
-        }
-    })
-})
-
-   
 router.route('/usuarios/:id')   // operacoes sobre um usuario(id)
 .get(function(req, res) {   // GET
     var response = {};
