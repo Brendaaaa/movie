@@ -11,8 +11,8 @@
     
     <div>
         <a href="http://localhost:3000/lista.html">Início</a> &nbsp;
-        <a href="#" data-ng-click="lista()">Minha lista</a> &nbsp;
-        <a href="#" data-ng-click="logout()">Logout</a> &nbsp; <!-- TODO logout -->
+        <a href="javascript:void(0)" data-ng-click="lista()">Minha lista</a> &nbsp;
+        <a href="javascript:void(0)" data-ng-click="logout()">Logout</a> &nbsp; <!-- TODO logout -->
     </div>
 
     <br><br>
@@ -23,13 +23,13 @@
             <button ng-click="busca()">BUSCA</button> &nbsp;
         </form>
         
-        <a href="#" id="Ação" data-ng-click="filtrar($event)"> Ação</a> &nbsp;
-        <a href="#" id="Comédia" data-ng-click="filtrar($event)"> Comédia</a> &nbsp;
-        <a href="#" id="Drama" data-ng-click="filtrar($event)"> Drama</a> &nbsp;
-        <a href="#" id="Ficção" data-ng-click="filtrar($event)"> Ficção</a> &nbsp;
-        <a href="#" id="Romance" data-ng-click="filtrar($event)"> Romance</a> &nbsp;
-        <a href="#" id="Terror" data-ng-click="filtrar($event)"> Terror</a> &nbsp;
-        <a href="#" id="Lançamento" data-ng-click="lancamento()"> Lançamentos</a> &nbsp;
+        <a href="javascript:void(0)" id="Ação" data-ng-click="filtrar($event)"> Ação</a> &nbsp;
+        <a href="javascript:void(0)" id="Comédia" data-ng-click="filtrar($event)"> Comédia</a> &nbsp;
+        <a href="javascript:void(0)" id="Drama" data-ng-click="filtrar($event)"> Drama</a> &nbsp;
+        <a href="javascript:void(0)" id="Ficção" data-ng-click="filtrar($event)"> Ficção</a> &nbsp;
+        <a href="javascript:void(0)" id="Romance" data-ng-click="filtrar($event)"> Romance</a> &nbsp;
+        <a href="javascript:void(0)" id="Terror" data-ng-click="filtrar($event)"> Terror</a> &nbsp;
+        <a href="javascript:void(0)" id="Lançamento" data-ng-click="lancamento()"> Lançamentos</a> &nbsp;
 
         <br><br>
         {{mensagem}}  <!-- Displaying results -->
@@ -40,7 +40,7 @@
         
                 <!-- first column: movie poster -->
                 <td>
-                    <img src="{{ filme.trailer }}" alt="{{ filme.titulo }}" style="width:135px;height:185px;" >
+                    <img src="{{ filme.poster }}" alt="{{ filme.titulo }}" style="width:135px;height:185px;" >
                 </td>
             
                 <!-- second columm: movie details -->
@@ -63,7 +63,7 @@
             <tr ng-repeat="item in lista"> <!-- each row has movie title and score -->
                 <td>Titulo: {{ item.titulo }}</td>
                 <td>Nota: {{ item.nota }}</td>
-                <td><a href="#" id="{{ item.filmeId }}" data-ng-click="removerNota($event)"> Remover nota</a> </td>
+                <td><a href="javascript:void(0)" id="{{ item.filmeId }}" data-ng-click="removerNota($event)"> Remover nota</a> </td>
             </tr>
         </table>
     </div>
@@ -97,8 +97,12 @@ app.controller('myCtrl', function($scope, $http, dataService) {
         document.getElementById('lista').style.display='none';
         $scope.titulo = "Filmes"
         if(reply.filmes != null) {
-            $scope.mensagem = "";
             $scope.filmes = reply.filmes;
+            if ($scope.filmes.length == 0){
+                $scope.mensagem = "Não há filmes disponíveis";
+            } else {
+                $scope.mensagem = "";
+            }
         } else {
             $scope.mensagem = reply.resultado;
             $scope.filmes = [];
@@ -172,7 +176,7 @@ app.controller('myCtrl', function($scope, $http, dataService) {
     
         $scope.prepareForHome();
         
-        var data = {"lançamentos": "2017" };
+        var data = {"lancamento": "2017" };
         var request = $http({"method": "post", "url": "/filmes", "data": data});
         request.success(function(reply) {
             $scope.mensagem = reply.resultado;
@@ -233,6 +237,7 @@ app.controller('myCtrl', function($scope, $http, dataService) {
         $scope.filmes = [];
         $scope.lista = [];
         $scope.mensagem = "";
+       // $scope.user = [];
         $scope.titulo = titulo;
     };
 });
