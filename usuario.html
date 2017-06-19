@@ -49,7 +49,6 @@ app.controller('myCtrl', function($scope, $http) {
     	parameters[key] = value;
 	}
 	$scope.mensagem = parameters['id_pass'];
-
 //vai para lista de filmes
  $scope.goFilme = function() {
      window.open("/lista.html", "_blank");
@@ -68,7 +67,6 @@ app.controller('myCtrl', function($scope, $http) {
      }
    );
  };
-
   // ACESSA
   $scope.acessa = function() {
      var url = "/usuarios";
@@ -96,7 +94,6 @@ app.controller('myCtrl', function($scope, $http) {
       }
     );
   };
-
     // REMOVE
   $scope.remove = function() {
      $scope.clear();
@@ -117,7 +114,6 @@ app.controller('myCtrl', function($scope, $http) {
        }
      );
    };
-
   
    // ATUALIZA
   $scope.atualiza = function() {
