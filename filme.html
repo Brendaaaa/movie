@@ -39,15 +39,45 @@
   Resultado: {{mensagem}}
   
   <br><br>
-  <table cellspacing="8">
-    <tr>  <th>{{htitulo}}</th> <th>{{helenco}}</th> <th>{{hdiretor}}</th>  </tr>
+  <table cellspacing="8" >
+   <!-- <tr>  <th>{{htitulo}}</th> <th>{{helenco}}</th> <th>{{hdiretor}}</th>  </tr>-->
     <tr ng-repeat="x in filme">
 
-      <td>{{ x.titulo }}</td>
+      <!--<td>{{ x.titulo }}</td>
       
       <td> {{x.elenco}} </td>
-      <td>{{x.diretor}}</td>
+      <td>{{x.diretor}}</td> -->
+      <td>  <img src="{{ x.poster }}" alt="{{ filme.titulo }}" style="width:300px;height:450px;" ></td>
       
+      
+      <td>
+      
+      <table  cellpadding="20">
+      <tr> <td><h1>{{x.titulo}}</h1></td> </tr>
+      <tr> <td>{{hdiretor}} {{x.diretor}}  </td> </tr>
+      <tr> <td>{{hgeneros}} {{x.generos}}  </td> </tr>
+      <tr> <td>{{hdata}} {{x.ano}}  </td> </tr>
+      <tr> <td>Sinopse: {{x.sinopse}} </td> </tr>
+
+      
+      </table>
+      <!--<table cellspacing="8">
+        <tr>
+           <td> <h1> {{ x.titulo }} </h1> </td>
+        </tr>
+        <tr>
+            <p> {{ x.ano }} </h1>
+        </tr>
+        
+        <tr>
+            
+            <p> {{ x.elenco }} </p>
+        </tr>
+        
+            
+        
+        </table>-->
+      </td>
     </tr>
   </table>
 
@@ -68,9 +98,11 @@ app.controller('myCtrl', function($scope, $http) {
         $scope.mensagem = reply;
         if(reply != null) {
           $scope.filme = reply.filme;
-          $scope.htitulo = "titulo"
-          $scope.helenco = "elenco"
-          $scope.hdiretor = "diretor"
+
+          $scope.hdata = "Data:"
+          $scope.hdiretor = "Direção:"
+          $scope.hgeneros = "Gêneros:"
+        
           //$scope.mensagem = ;
           //$scope. = reply;
           } else {
