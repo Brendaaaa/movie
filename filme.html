@@ -86,8 +86,9 @@ var app = angular.module('myApp', []);
 app.controller('myCtrl', function($scope, $http) {
   // ACESSA
   $scope.acessa = function() {
-     //document.getElementById('darNota').style.display='block'; //TODO to tentando fazer isso. descomentar o codigo da ruim...
-     //document.getElementById('mostrarNota').style.display='block';
+     $scope.clear();
+     document.getElementById('darNota').style.display='none'; //TODO to tentando fazer isso. descomentar o codigo da ruim...
+     document.getElementById('mostrarNota').style.display='none';
      var url = "/filmes/" ;
      if ($scope.id != undefined) url = "/filmes/" + $scope.id;
      var request = $http({
@@ -95,7 +96,9 @@ app.controller('myCtrl', function($scope, $http) {
                   "url": url});
      request.success(function(reply) {
         $scope.mensagem = reply;
-        if(reply != null) {
+        
+        if(reply.resultado != "Filme inexistente" && reply.resultado != "Falha de acesso ao banco de dados") {
+            document.getElementById('mensagemResultado').style.display='none';
             $scope.filme = reply.filme;
 
             $scope.hdata = "Data:";
@@ -106,31 +109,37 @@ app.controller('myCtrl', function($scope, $http) {
             //TODO LOGICA PARA PEGAR A NOTA
             var request2 = $http({ "method":"get", "url":"/usuarios/" + 977}); //TODO remove fixo
             request2.success(function(reply2) {
-                $scope.user = reply2.usuario;
-                $scope.listaFilmesUsuario = reply2.usuario.lista;
-                var aux = 0;
-                for (i =0; i< reply2.usuario.lista.length; i++) {
-                    if(reply2.usuario.lista[i].filmeId == $scope.filme.id) {
-                            $scope.nota = reply2.usuario.lista[i].nota;
-                            aux = 1;
-                            
+                if(reply2.resultado != "Falha de acesso ao banco de dados" && reply2.resultado != "usuario inexistente") {
+                    $scope.user = reply2.usuario;
+                    $scope.listaFilmesUsuario = reply2.usuario.lista;
+                    var aux = 0;
+                    for (i =0; i< reply2.usuario.lista.length; i++) {
+                        if(reply2.usuario.lista[i].filmeId == $scope.filme.id) {
+                                $scope.nota = reply2.usuario.lista[i].nota;
+                                aux = 1;
+                                
+                        }
+                        //$scope.listaFilmesUsuario = reply2.usuario;
                     }
-                    //$scope.listaFilmesUsuario = reply2.usuario;
-                }
-                
-    
-                if(aux == 1) {
-                    document.getElementById('mostrarNota').style.display='block'; //mostra a nota...
-                    document.getElementById('darNota').style.display='none';
+                    
+        
+                    if(aux == 1) {
+                        document.getElementById('mostrarNota').style.display='block'; //mostra a nota...
+                        document.getElementById('darNota').style.display='none';
+                    }
+                    else {
+                        document.getElementById('darNota').style.display='block'; //da opcao de ver nota...
+                        document.getElementById('mostrarNota').style.display='none';
+                    }
                 }
                 else {
-                    document.getElementById('darNota').style.display='block'; //da opcao de ver nota...
-                    document.getElementById('mostrarNota').style.display='none';
+                    document.getElementById('mensagemResultado').style.display='none';
+                    $scope.mensagem = reply2.resultado;
                 }
                 
             });
             request2.error(function(reply2) {
-                $scope.listaFilmesUsuario = reply2;
+                alert("Falha na requisicao de usuarios");
             });
 
 
@@ -141,7 +150,7 @@ app.controller('myCtrl', function($scope, $http) {
         }
      });
       request.error(function(reply) {
-         alert("Falha na requisicao");
+         alert("Falha na requisicao de filmes");
       }
     );
   };
@@ -200,9 +209,9 @@ app.controller('myCtrl', function($scope, $http) {
   
   // CLEAR
   $scope.clear = function() {
-    $scope.alunos = [];
+    $scope.filme = {};
     $scope.mensagem = "";
-    $scope.hra = $scope.hnome = $scope.hcurso = "";
+    $scope.hdata = $scope.hdiretor = $scope.hgeneros = $scope.hsinopse = "";
     }
   }
 );
