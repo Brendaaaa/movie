@@ -2,26 +2,22 @@
 <html>
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
 <head>
-	<!--<style type="text/css">
-		body {
-			background: black;
-			color: white;
-		}
-		div {
-		max-width: 500px;
 
-		border: 20px solid white;
-		padding: 10px;
-	
-		}
-		
-		
-
-	</style>-->
 </head>
 <body>
 
 <h1>Visualização de filmes</h1>
+
+
+     <!-- <div id="darNot2a" >
+        
+       
+            <form id="damn">
+                Nota: (entre 1 e 5):
+                <input type="number" name="quantity" min="1" max="5">
+            </form>
+        
+      </div>-->
 
 
 <br>
@@ -35,10 +31,6 @@
 
   </form>
 
-   <form>
-  Quantity (between 1 and 5):
-  <input type="number" name="quantity" min="1" max="5">
-  </form> 
   
   
   <br><br>
@@ -46,13 +38,10 @@
   
   <br><br>
   <table cellspacing="8" >
-   <!-- <tr>  <th>{{htitulo}}</th> <th>{{helenco}}</th> <th>{{hdiretor}}</th>  </tr>-->
+
     <tr ng-repeat="x in filme">
 
-      <!--<td>{{ x.titulo }}</td>
-      
-      <td> {{x.elenco}} </td>
-      <td>{{x.diretor}}</td> -->
+
       <td>  <img src="{{ x.poster }}" alt="{{ filme.titulo }}" style="width:300px;height:450px;" ></td>
       
       
@@ -65,24 +54,19 @@
       <tr> <td>{{hdata}} {{x.ano}}  </td> </tr>
       <tr> <td>Sinopse: {{x.sinopse}} </td> </tr>
 
+      <div id="darNota">  
+        <tr><td>
+            <form>
+                Nota: (entre 1 e 5):
+                <input type="number" name="quantity" min="1" max="5">
+            </form>                      
+        </td></tr>
+      </div>
       
       </table>
-      <!--<table cellspacing="8">
-        <tr>
-           <td> <h1> {{ x.titulo }} </h1> </td>
-        </tr>
-        <tr>
-            <p> {{ x.ano }} </h1>
-        </tr>
         
-        <tr>
-            
-            <p> {{ x.elenco }} </p>
-        </tr>
-        
-            
-        
-        </table>-->
+
+
       </td>
     </tr>
   </table>
@@ -95,6 +79,8 @@ var app = angular.module('myApp', []);
 app.controller('myCtrl', function($scope, $http) {
   // ACESSA
   $scope.acessa = function() {
+     //document.getElementById('darNota').style.display='none'; //TODO to tentando fazer isso. descomentar o codigo da ruim...
+
      var url = "/filmes/" ;
      if ($scope.id != undefined) url = "/filmes/" + $scope.id;
      var request = $http({
@@ -108,7 +94,8 @@ app.controller('myCtrl', function($scope, $http) {
           $scope.hdata = "Data:"
           $scope.hdiretor = "Direção:"
           $scope.hgeneros = "Gêneros:"
-        
+         
+
           //$scope.mensagem = ;
           //$scope. = reply;
           } else {
