@@ -475,13 +475,13 @@ router.route('/authentication')   // autenticação
             response = {"resultado": "usuario inexistente ou senha invalida"};
     		res.status(401).send('eq.body.pass');   // unauthorized
         } else {
-            response = {"usuarios": [data]};
-			if(user == data.username && pass == data.senha) {
+            response = {"user": data};
+//			if(user == data.username && pass == data.senha) {
 	  			res.cookie('EA975', 'secret', {'maxAge': 3600000*24*5});
-	  			res.status(200).send('/usuario.html"');  // OKss
-      		} else {
-	  			res.status(401).send('eq.body.pass');   // unauthorized
-      		}
+	  			res.json(response);//res.status(200).send('/usuario.html"');  // OKss
+  //    		} else {
+//	  			res.json(response);//res.status(401).send('eq.body.pass');   // unauthorized
+  //    		}
         }
        })
      }

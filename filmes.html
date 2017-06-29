@@ -6,12 +6,26 @@
 <br>
 
 <div ng-app="myApp" ng-controller="myCtrl">
-    
+
     <h1>{{titulo}}</h1>
+ 
+    <br><br>
+ 
+    <div id="logar">
+        <form>
+            Username: <input type="text" ng-model="userField"><br><br>
+            Senha: <input type="password" ng-model="pass"><br><br>
+            <button ng-click="doPost()">LOGIN</button><br><br><br>
+        </form>
+        <br><br>
+        <br><br>
+        <h6>Ainda não tem um cadastro? <a href="usuariosCad.html">Cadastre-se</a><br><br>
+    </div>
+
     
-    <div>
-        <a href="http://localhost:3000/lista.html">Início</a> &nbsp;
-        <a href="javascript:void(0)" data-ng-click="lista()">Minha lista</a> &nbsp;
+    <div id="barra">
+        <a href="javascript:void(0)" data-ng-click="goHome()">Início</a> &nbsp;
+        <a href="javascript:void(0)" data-ng-click="listar()">Minha lista</a> &nbsp;
         <a href="javascript:void(0)" data-ng-click="logout()">Logout</a> &nbsp; <!-- TODO logout -->
     </div>
 
@@ -91,7 +105,9 @@ app.service('dataService', function($http){
 app.controller('myCtrl', function($scope, $http, dataService) {
     
     dataService.getData(function(reply){
-        document.getElementById('inicio').style.display='block';
+        document.getElementById('barra').style.display='none';
+        document.getElementById('logar').style.display='block';
+        document.getElementById('inicio').style.display='none';
         document.getElementById('lista').style.display='none';
         $scope.titulo = "Filmes"
         if(reply.filmes != null) {
@@ -106,13 +122,38 @@ app.controller('myCtrl', function($scope, $http, dataService) {
             $scope.filmes = [];
         }
     });
+
+    $scope.goHome = function(){
+        
+        $scope.prepareForHome();
+        
+        var request = $http({
+                "method": "get", "url": "/filmes"
+        }).success(function(reply) {
+            $scope.titulo = "Filmes"
+            if(reply.filmes != null) {
+                $scope.filmes = reply.filmes;
+                if ($scope.filmes.length == 0){
+                    $scope.mensagem = "Não há filmes disponíveis";
+                } else {
+                    $scope.mensagem = "";
+                }
+            } else {
+                $scope.mensagem = reply.resultado;
+                $scope.filmes = [];
+            }
+        }).error(function() {
+            reply.resultado = "Houve um problema na requisição. Tente novamente mais tarde."
+            callbackFunction(reply);
+        });
+    };
     
     // Listing movies added to personal list 
-    $scope.lista = function() {
+    $scope.listar = function() {
         
         $scope.prepareForList();
             
-        var request = $http({"method": "get", "url": "/usuarios/977"}); //TODO remove id fixo
+        var request = $http({"method": "get", "url": "/usuarios/" + $scope.user.id}); //TODO remove id fixo
         request.success(function(reply) {
             if(reply.usuario != null) {
                 $scope.lista = reply.usuario.lista;
@@ -194,7 +235,7 @@ app.controller('myCtrl', function($scope, $http, dataService) {
         $scope.prepareForList();
         
         var request = $http({"method": "put",
-                             "url": "/usuarios/" + 977, //TODO remove fixo
+                             "url": "/usuarios/"  + $scope.user.id, //TODO remove fixo
                              "data": {"usuario" : $scope.user}});
         
         request.success(function(reply) {
@@ -212,37 +253,70 @@ app.controller('myCtrl', function($scope, $http, dataService) {
     
     };
     $scope.prepareForList = function() {
+        document.getElementById('barra').style.display='block';
         document.getElementById('inicio').style.display='none';
         document.getElementById('lista').style.display='block';
+        document.getElementById('logar').style.display='none';
         $scope.clear("Meus filmes");
     };
     
     $scope.prepareForHome = function() {
+        document.getElementById('barra').style.display='block';
         document.getElementById('inicio').style.display='block';
         document.getElementById('lista').style.display='none';
+        document.getElementById('logar').style.display='none';
         $scope.clear("Filmes");
     };
 
+    $scope.prepareForLogin = function() {
+        document.getElementById('barra').style.display='none';
+        document.getElementById('inicio').style.display='none';
+        document.getElementById('lista').style.display='none';
+        document.getElementById('logar').style.display='block';
+        $scope.clear("Filmes");
+    };
+
+    
     // LOGOUT
-   $scope.logout = function() {
-     $scope.clear();
-     var request = $http({
-                 "method": "delete",
-                 "url": "/authentication"});
-     request.success(function(reply) {
-         $scope.mensagem = reply.resultado;
-         window.open("/auth.html", "_blank");
-         
-     }
-   );
- };
+    $scope.logout = function() {
+        $scope.clear();
+        var request = $http({"method": "delete", "url": "/authentication"});
+        request.success(function(reply) {
+            $scope.user = []
+            $scope.prepareForLogin();
+            $scope.mensagem = reply.resultado;
+          //  window.open("/auth.html", "_blank");
+        });
+    };
+    
+    $scope.doPost = function() {
+        $scope.result = "";
+        var url = "/authentication";
+        var data = {"user": $scope.userField, "pass": $scope.pass};
+        var request = $http({"method": "post",
+                             "url": url,
+                             "data": data});
+        request.success(function(reply, status) {
+            if (reply.user != null){
+                $scope.userField = reply.user.senha
+                $scope.user = reply.user
+                $scope.result = "success"
+                $scope.goHome();
+            } else {
+                $scope.result = reply.resultado;
+            }
+        });
+        request.error(function(reply, status) {
+            alert("Falha de autenticação");
+        });
+    };
     
     // CLEAR
     $scope.clear = function(titulo) {
         $scope.filmes = [];
         $scope.lista = [];
         $scope.mensagem = "";
-       // $scope.user = [];
+//        $scope.user = [];
         $scope.titulo = titulo;
     };
 });
