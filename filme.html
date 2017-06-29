@@ -35,7 +35,8 @@
   
   <br><br>
   Resultado: {{mensagem}}
-
+  <br><br>
+  Outro resultado : {{mensagem2}}
   
   <br><br>
   <table cellspacing="8" >
@@ -53,7 +54,7 @@
       <tr> <td>{{hdiretor}} {{filme.diretor}}  </td> </tr>
       <tr> <td>{{hgeneros}} {{filme.generos}}  </td> </tr>
       <tr> <td>{{hdata}} {{filme.ano}}  </td> </tr>
-      <tr> <td>Sinopse: {{filme.sinopse}} </td> </tr>
+      <tr> <td>{{hsinopse}} {{filme.sinopse}} </td> </tr>
 
        
         <tr><td>
@@ -72,7 +73,11 @@
 </div>
 
 
-<div id="darNota"> 
+<div id="mostrarNota" style="display: none;">
+<p> Nota: {{nota}} </p>
+</div>
+
+<div id="darNota" style="display: none;"> 
 <form>
     Nota: (entre 1 e 5):
     <input type="number" name="quantity" min="1" max="5">
@@ -86,8 +91,8 @@ var app = angular.module('myApp', []);
 app.controller('myCtrl', function($scope, $http) {
   // ACESSA
   $scope.acessa = function() {
-     //document.getElementById('darNota').style.display='none'; //TODO to tentando fazer isso. descomentar o codigo da ruim...
-
+     //document.getElementById('darNota').style.display='block'; //TODO to tentando fazer isso. descomentar o codigo da ruim...
+     //document.getElementById('mostrarNota').style.display='block';
      var url = "/filmes/" ;
      if ($scope.id != undefined) url = "/filmes/" + $scope.id;
      var request = $http({
@@ -96,21 +101,44 @@ app.controller('myCtrl', function($scope, $http) {
      request.success(function(reply) {
         $scope.mensagem = reply;
         if(reply != null) {
-          $scope.filme = reply.filme;
+            $scope.filme = reply.filme;
 
-          $scope.hdata = "Data:"
-          $scope.hdiretor = "Direção:"
-          $scope.hgeneros = "Gêneros:"
-         
+            $scope.hdata = "Data:";
+            $scope.hdiretor = "Direção:";
+            $scope.hgeneros = "Gêneros:";
+            $scope.hsinopse = "Sinopse: ";
+            
+            //TODO LOGICA PARA PEGAR A NOTA
+            var request2 = $http({ "method":"get", "url":"/usuarios/" + 977}); //TODO remove fixo
+            request2.success(function(reply2) {
+                $scope.mensagem2 = reply2.usuario.lista;
+                var aux = 0;
+                for (elemLista in reply2.usuario.lista) {
+                    if(elemLista.filmeId == reply.filme.id) {
+                            $scope.nota = elemLista.nota;
+                            aux = 1;
+                    }
+                    //$scope.mensagem2 = reply2.usuario;
+                }
+                if(aux == 1) {
+                    document.getElementById('mostrarNota').style.display='block'; //mostra a nota...
+                }
+                else {
+                    document.getElementById('darNota').style.display='block'; //da opcao de ver nota...
+                }
+                
+            });
+            request2.error(function(reply2) {
+                $scope.mensagem2 = reply2;
+            });
 
           //$scope.mensagem = ;
           //$scope. = reply;
-          } else {
-              $scope.clear();
-              $scope.mensagem = reply.resultado;
-            }
-         }
-      );
+        } else {
+            $scope.clear();
+            $scope.mensagem = reply.resultado;
+        }
+     });
       request.error(function(reply) {
          alert("Falha na requisicao");
       }
@@ -118,6 +146,8 @@ app.controller('myCtrl', function($scope, $http) {
   };
 
 
+  
+  
   // CLEAR
   $scope.clear = function() {
     $scope.alunos = [];
