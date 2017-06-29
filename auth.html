@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
@@ -11,9 +12,8 @@
     UserNames: <input type="text" ng-model="user"><br><br>
     Senha: <input type="password" ng-model="pass"><br><br>
     <button ng-click="doPost()">LOGIN</button><br><br><br>
-    <button ng-click="goCad()">CADASTRO</button><br><br>
   </form>
-    <b>Resultado:</b>&nbsp;{{result}}
+  <h6>Ainda não tem um cadastro? <a href="usuariosCad.html">Cadastre-se</a><br><br>
 </div>
 
 
@@ -31,19 +31,18 @@ app.controller('myCtrl', function($scope, $http) {
                  "data": data});
      request.success(function(reply, status) {
         $scope.result = $scope.user;
-        var newWindow=window.open("/usuario.html?id_pass=" + $scope.user, "_blank");
+        var newWindow=window.open("/filmes.html?id_pass=" + data.id, "_blank");
         }
       );
       request.error(function(reply, status) {
-        $scope.result = "Falha na autenticação";
+	alert("Falha de autenticação");
        }
      );
    };
    
-   $scope.goCad = function() {
-     window.open("/usuariosCad.html", "_blank");
   }
-  }
+
+  
 );
 </script> 
 
