@@ -222,6 +222,20 @@ app.controller('myCtrl', function($scope, $http, dataService) {
         document.getElementById('lista').style.display='none';
         $scope.clear("Filmes");
     };
+
+    // LOGOUT
+   $scope.logout = function() {
+     $scope.clear();
+     var request = $http({
+                 "method": "delete",
+                 "url": "/authentication"});
+     request.success(function(reply) {
+         $scope.mensagem = reply.resultado;
+         window.open("/auth.html", "_blank");
+         
+     }
+   );
+ };
     
     // CLEAR
     $scope.clear = function(titulo) {
