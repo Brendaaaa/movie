@@ -25,7 +25,7 @@
   
   
   
-  <p style="display: none;">Resultado: {{mensagem}}</p>
+  <p style="display: none;" id="mensagemResultado">Resultado: {{mensagem}}</p>
  
   <p style="display: none;">Outro resultado : {{listaFilmesUsuario}}</p>
   
@@ -66,7 +66,7 @@
   
     <form id="darNota" style="display: none;">
     Nota: (entre 1 e 5):
-    <input type="number" ng-model="notaDada" min="1" max="5">
+    <input type="number" ng-model="notaDada">
     <button  ng-click="darNotaFilme()">Dar nota</button> &nbsp;
     </form>  
 
@@ -121,9 +121,11 @@ app.controller('myCtrl', function($scope, $http) {
     
                 if(aux == 1) {
                     document.getElementById('mostrarNota').style.display='block'; //mostra a nota...
+                    document.getElementById('darNota').style.display='none';
                 }
                 else {
                     document.getElementById('darNota').style.display='block'; //da opcao de ver nota...
+                    document.getElementById('mostrarNota').style.display='none';
                 }
                 
             });
@@ -133,7 +135,8 @@ app.controller('myCtrl', function($scope, $http) {
 
 
         } else {
-            $scope.clear();
+           // $scope.clear();
+            document.getElementById('mensagemResultado').style.display='block';
             $scope.mensagem = reply.resultado;
         }
      });
@@ -145,41 +148,53 @@ app.controller('myCtrl', function($scope, $http) {
 
 
   $scope.darNotaFilme = function() {
-    var novaLista = new Array();
-    for (i = 0; i < $scope.listaFilmesUsuario.length; i++) {
-        novaLista.push($scope.listaFilmesUsuario[i]);        
+    document.getElementById('mensagemResultado').style.diplay='none';
+    if($scope.notaDada > 5 || $scope.notaDada < 1) {
+        alert("Nota inserida não é válida(Notas válidas são números entre 1 e 5)");
+        document.getElementById('mensagemResultado').style.display='block';
+        $scope.mensagem = "Nota inserida não é válida(Notas válidas são números entre 1 e 5). Insira a nota novamente.";
     }
-    var novaNota = {
-        "filmeId": $scope.filme.id,
-        "titulo": $scope.filme.titulo,
-        "nota": $scope.notaDada,
-        "poster":$scope.filme.poster
-    }
-    novaLista.push(novaNota);
-    
-    $scope.user.lista = novaLista;
-    $scope.mensagem3 = $scope.user;
-    
-    document.getElementById('mostrarNota').style.display='block'; //mostra a nota...
-    document.getElementById('darNota').style.display='none'; //da opcao de ver nota...
-    
-    var request = $http({"method": "put",
-                        "url": "/usuarios/" + 977, //TODO remove fixo
-                        "data": {"usuario" : $scope.user}});
-    
-    request.success(function(reply) {
-        if (reply.resultado == "SUCESSO"){
-            $scope.mensagem = "Nota adicionada";
-            $scope.nota = $scope.notaDada;
-        } else {
-            $scope.mensagem = reply.resultado;
+    else {
+        var novaLista = new Array();
+        for (i = 0; i < $scope.listaFilmesUsuario.length; i++) {
+            novaLista.push($scope.listaFilmesUsuario[i]);        
         }
-    });
-    
-    request.error(function(reply) {
-        alert("Falha na requisicao");
-    });
-    
+        var novaNota = {
+            "filmeId": $scope.filme.id,
+            "titulo": $scope.filme.titulo,
+            "nota": $scope.notaDada,
+            "poster":$scope.filme.poster
+        }
+        novaLista.push(novaNota);
+        
+        $scope.user.lista = novaLista;
+        $scope.mensagem3 = $scope.user;
+
+        
+        var request = $http({"method": "put",
+                            "url": "/usuarios/" + 977, //TODO remove fixo
+                            "data": {"usuario" : $scope.user}});
+        
+        request.success(function(reply) {
+            if (reply.resultado == "SUCESSO"){
+            
+                
+                document.getElementById('mostrarNota').style.display='block'; //mostra a nota...
+                document.getElementById('darNota').style.display='none'; //da opcao de ver nota...
+                
+                document.getElementById('mensagemResultado').style.display='block';
+                $scope.mensagem = reply.resultado;
+                $scope.nota = $scope.notaDada;
+            } else {
+                document.getElementById('mensagemResultado').style.display='block';
+                $scope.mensagem = reply.resultado;
+            }
+        });
+        
+        request.error(function(reply) {
+            alert("Falha na requisicao");
+        });
+    }
   };
   
   
