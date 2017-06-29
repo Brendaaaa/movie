@@ -9,16 +9,6 @@
 <h1>Visualização de filmes</h1>
 
 
-     <!-- <div id="darNot2a" >
-        
-       
-            <form id="damn">
-                Nota: (entre 1 e 5):
-                <input type="number" name="quantity" min="1" max="5">
-            </form>
-        
-      </div>-->
-
 
 <br>
 
@@ -31,13 +21,17 @@
 
   </form>
 
+
   
   
-  <br><br>
-  Resultado: {{mensagem}}
-  <br><br>
-  Outro resultado : {{mensagem2}}
   
+  <p style="display: none;">Resultado: {{mensagem}}</p>
+ 
+  <p style="display: none;">Outro resultado : {{listaFilmesUsuario}}</p>
+  
+  <p style="display: none;">Teste nota : {{mensagem3}}</p>
+  
+  <p style="display: none;">User : {{user}}</p>
   <br><br>
   <table cellspacing="8" >
 
@@ -69,20 +63,21 @@
       </td>
     </tr>
   </table>
-
-</div>
-
-
-<div id="mostrarNota" style="display: none;">
-<p> Nota: {{nota}} </p>
-</div>
-
-<div id="darNota" style="display: none;"> 
-<form>
+  
+    <form id="darNota" style="display: none;">
     Nota: (entre 1 e 5):
-    <input type="number" name="quantity" min="1" max="5">
-</form>  
+    <input type="number" ng-model="notaDada" min="1" max="5">
+    <button  ng-click="darNotaFilme()">Dar nota</button> &nbsp;
+    </form>  
+
+    <p id="mostrarNota" style="display: none;"> Nota: {{nota}} </p>
+    
+
+
 </div>
+
+
+
 
 
 
@@ -111,15 +106,19 @@ app.controller('myCtrl', function($scope, $http) {
             //TODO LOGICA PARA PEGAR A NOTA
             var request2 = $http({ "method":"get", "url":"/usuarios/" + 977}); //TODO remove fixo
             request2.success(function(reply2) {
-                $scope.mensagem2 = reply2.usuario.lista;
+                $scope.user = reply2.usuario;
+                $scope.listaFilmesUsuario = reply2.usuario.lista;
                 var aux = 0;
-                for (elemLista in reply2.usuario.lista) {
-                    if(elemLista.filmeId == reply.filme.id) {
-                            $scope.nota = elemLista.nota;
+                for (i =0; i< reply2.usuario.lista.length; i++) {
+                    if(reply2.usuario.lista[i].filmeId == $scope.filme.id) {
+                            $scope.nota = reply2.usuario.lista[i].nota;
                             aux = 1;
+                            
                     }
-                    //$scope.mensagem2 = reply2.usuario;
+                    //$scope.listaFilmesUsuario = reply2.usuario;
                 }
+                
+    
                 if(aux == 1) {
                     document.getElementById('mostrarNota').style.display='block'; //mostra a nota...
                 }
@@ -129,11 +128,10 @@ app.controller('myCtrl', function($scope, $http) {
                 
             });
             request2.error(function(reply2) {
-                $scope.mensagem2 = reply2;
+                $scope.listaFilmesUsuario = reply2;
             });
 
-          //$scope.mensagem = ;
-          //$scope. = reply;
+
         } else {
             $scope.clear();
             $scope.mensagem = reply.resultado;
@@ -146,6 +144,43 @@ app.controller('myCtrl', function($scope, $http) {
   };
 
 
+  $scope.darNotaFilme = function() {
+    var novaLista = new Array();
+    for (i = 0; i < $scope.listaFilmesUsuario.length; i++) {
+        novaLista.push($scope.listaFilmesUsuario[i]);        
+    }
+    var novaNota = {
+        "filmeId": $scope.filme.id,
+        "titulo": $scope.filme.titulo,
+        "nota": $scope.notaDada,
+        "poster":$scope.filme.poster
+    }
+    novaLista.push(novaNota);
+    
+    $scope.user.lista = novaLista;
+    $scope.mensagem3 = $scope.user;
+    
+    document.getElementById('mostrarNota').style.display='block'; //mostra a nota...
+    document.getElementById('darNota').style.display='none'; //da opcao de ver nota...
+    
+    var request = $http({"method": "put",
+                        "url": "/usuarios/" + 977, //TODO remove fixo
+                        "data": {"usuario" : $scope.user}});
+    
+    request.success(function(reply) {
+        if (reply.resultado == "SUCESSO"){
+            $scope.mensagem = "Nota adicionada";
+            $scope.nota = $scope.notaDada;
+        } else {
+            $scope.mensagem = reply.resultado;
+        }
+    });
+    
+    request.error(function(reply) {
+        alert("Falha na requisicao");
+    });
+    
+  };
   
   
   // CLEAR
