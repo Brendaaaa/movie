@@ -40,10 +40,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 var router = express.Router();
 app.use('/', router);   // deve vir depois de app.use(bodyParser...
 
-// comente as duas linhas abaixo
-// app.use('/', index);
-// app.use('/users', users);
-
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
     var err = new Error('Not Found');
@@ -74,7 +70,7 @@ function checkAuth(req, res) {
   var key = '';
   if(cookies) key = cookies.EA975;
   if(key == 'secret') return true;
-  res.json({'resultado': 'Clique em LOGIN para continuar'});
+  res.json({'resultado': 'Acesso negado. Autentique-se'});
   return false;
 }
 
@@ -87,113 +83,15 @@ router.route('/')
   
 router.route('/') 
 .get(function(req, res) {  // GET
-    var path = 'usuarios.html';
+    var path = 'filmes.html';
     res.sendfile(path, {"root": "./"});
 });
 
-router.route('/alunos')   // operacoes sobre todos os alunos
-  .get(function(req, res) {  // GET
-  if(! checkAuth(req, res)) return;
-    var response = {};
-    mongoOp.find({}, function(erro, data) {
-       if(erro)
-          response = {"resultado": "Falha de acesso ao banco de dados"};
-        else
-          response = {"alunos": data};
-          res.json(response);
-        }
-      )
-    }
-  )
-  .post(function(req, res) {   // POST (cria)
-     var query = {"ra": req.body.ra};
-     var response = {};
-     mongoOp.findOne(query, function(erro, data) {
-        if (data == null) {
-           var db = new mongoOp();
-           db.ra = req.body.ra;
-           db.nome = req.body.nome;
-           db.curso = req.body.curso;
-           db.save(function(erro) {
-             if(erro) {
-                 response = {"resultado": "Falha de insercao no BD"};
-                 res.json(response);
-             } else {
-                 response = {"resultado": "Aluno inserido no BD"};
-                 res.json(response);
-              }
-            }
-          )
-        } else {
-        response = {"resultado": "Aluno ja existente"};
-            res.json(response);
-          }
-        }
-      )
-    }
-  );
-
-
-router.route('/alunos/:ra')   // operacoes sobre um aluno (RA)
-  .get(function(req, res) {   // GET
-  if(! checkAuth(req, res)) return;
-      var response = {};
-      var query = {"ra": req.params.ra};
-      mongoOp.findOne(query, function(erro, data) {
-         if(erro) {
-            response = {"resultado": "Falha de acesso ao banco de dados"};
-            res.json(response);
-         } else if (data == null) {
-             response = {"resultado": "aluno inexistente"};
-             res.json(response);   
-     } else {
-        response = {"alunos": [data]};
-            res.json(response);
-           }
-        }
-      )
-    }
-  )
-  .put(function(req, res) {   // PUT (altera)
-  if(! checkAuth(req, res)) return;
-      var response = {};
-      var query = {"ra": req.params.ra};
-      var data = {"nome": req.body.nome, "curso": req.body.curso};
-      mongoOp.findOneAndUpdate(query, data, function(erro, data) {
-          if(erro) {
-            response = {"resultado": "Falha de acesso ao banco de dados"};
-            res.json(response);
-      } else if (data == null) { 
-             response = {"resultado": "aluno inexistente"};
-             res.json(response);   
-          } else {
-             response = {"resultado": "aluno atualizado no BD"};
-             res.json(response);   
-      }
-        }
-      )
-    }
-  )
-  .delete(function(req, res) {   // DELETE (remove)
-  if(! checkAuth(req, res)) return;
-        var response = {};
-        var query = {"ra": req.params.ra};
-        mongoOp.findOneAndRemove(query, function(erro, data) {
-            if(erro) {
-                response = {"resultado": "Falha de acesso ao banco de dados"};
-                res.json(response);
-            } else if (data == null) {        
-                response = {"resultado": "aluno inexistente"};
-                res.json(response);
-            } else {
-                response = {"resultado": "aluno removido do BD"};
-                res.json(response);
-            }
-        })
-   });
-
 router.route('/filmes')   // operacoes sobre todos os filmes
 .get(function(req, res) {  // GET
+    if(!checkAuth(req, res)){
+        return;
+    }
 
     var response = {};
     filmeOp.find({}, function(erro, data) {
@@ -206,6 +104,9 @@ router.route('/filmes')   // operacoes sobre todos os filmes
     })
 })
 .post(function(req, res) {   // POST (cria e busca filmes)
+    if(!checkAuth(req, res)){
+        return;
+    }
 
     if (req.body.busca != null){ //eh um caso de busca
         var query = {"titulo": req.body.busca};
@@ -281,18 +182,20 @@ router.route('/filmes')   // operacoes sobre todos os filmes
             }
         })
     }
-})//;
+})
 .delete(function(req, res) {
-    
-//    TODO eh necessario um mecanismo de deletar todos os filmes?
-//    console.log(req.path); 
-//    console.log(JSON.stringify(req.body));
-//    res.status(200).send('String test');
+    if(!checkAuth(req, res)){
+        return;
+    }
+    res.status(200).send('Não é possível remover todos os filmes');
 });
 
 
 router.route('/filmes/:id')   // operacoes sobre um filme(id)
 .get(function(req, res) {   // GET
+    if(!checkAuth(req, res)){
+        return;
+    }
     var response = {};
     var query = {"id": req.params.id};
     filmeOp.findOne(query, function(erro, data) {
@@ -309,6 +212,10 @@ router.route('/filmes/:id')   // operacoes sobre um filme(id)
     })
 })
 .put(function(req, res) {   // PUT (altera)
+    if(!checkAuth(req, res)){
+        return;
+    }
+
     var response = {};
     var query = {"id": req.params.id};
     var data = req.body;
@@ -326,6 +233,10 @@ router.route('/filmes/:id')   // operacoes sobre um filme(id)
     })
 })
 .delete(function(req, res) {   // DELETE (remove)
+    if(!checkAuth(req, res)){
+        return;
+    }
+
     var response = {};
     var query = {"id": req.params.id};
     filmeOp.findOneAndRemove(query, function(erro, data) {
@@ -342,9 +253,11 @@ router.route('/filmes/:id')   // operacoes sobre um filme(id)
     })
 });
    
-router.route('/usuarios') 
+router.route('/usuarios')
 .get(function(req, res) {  // GET
-
+    if(!checkAuth(req, res)){
+        return;
+    }
     var response = {};
     usuarioOp.find({}, function(erro, data) {
         if(erro){
@@ -356,6 +269,9 @@ router.route('/usuarios')
     })
 })
 .post(function(req, res) { // POST (cria)
+    if(!checkAuth(req, res)){
+        return;
+    }
 
     var query = {"id": req.body.id};
     var response = {};
@@ -393,13 +309,17 @@ router.route('/usuarios')
     })
 })
 .delete(function(req, res) {  
-    console.log(req.path); 
-    console.log(JSON.stringify(req.body));
-    res.status(200).send('String test');
+    if(!checkAuth(req, res)){
+        return;
+    }
+    res.status(200).send('Não é possível remover todos os usuários');
 });
 
 router.route('/usuarios/:id')   // operacoes sobre um usuario(id)
 .get(function(req, res) {   // GET
+    if(!checkAuth(req, res)){
+        return;
+    }
     var response = {};
     var query = {"id": req.params.id};
     usuarioOp.findOne(query, function(erro, data) {
@@ -407,7 +327,7 @@ router.route('/usuarios/:id')   // operacoes sobre um usuario(id)
             response = {"resultado": "Falha de acesso ao banco de dados"};
             res.json(response);
         } else if (data == null) {
-            response = {"resultado": "usuario inexistente"};
+            response = {"resultado": "Usuário inexistente"};
             res.json(response);   
         } else {
             response = {"usuario": data};
@@ -417,6 +337,9 @@ router.route('/usuarios/:id')   // operacoes sobre um usuario(id)
     })
 })
 .put(function(req, res) {   // PUT (altera)
+    if(!checkAuth(req, res)){
+        return;
+    }
     var response = {};
     var query = {"id": req.params.id};
     usuarioOp.findOneAndUpdate(query, req.body.usuario, { new: true }, function(erro, data) {
@@ -452,42 +375,35 @@ router.route('/usuarios/:id')   // operacoes sobre um usuario(id)
 });
 
 router.route('/authentication')   // autenticação
-  .get(function(req, res) {  // GET
-     var path = 'auth.html';
-     res.header('Cache-Control', 'no-cache');
-     res.sendfile(path, {"root": "./"});
-     }
-  )
-  .post(function(req, res) { 
-     console.log(JSON.stringify(req.body));
-     var user = req.body.user;
-     var pass = req.body.pass;
-     // verifica usuario e senha na base de dados
-     
-     
-     var response = {};
-     var query = {"username": user, "senha": pass};
-     usuarioOp.findOne(query, function(erro, data) {
+.get(function(req, res) {  // GET
+    var path = 'auth.html';
+    res.header('Cache-Control', 'no-cache');
+    res.sendfile(path, {"root": "./"});
+})
+.post(function(req, res) { 
+    console.log(JSON.stringify(req.body));
+    var user = req.body.user;
+    var pass = req.body.pass;
+    if (user == null || pass == null){
+        response = {"resultado": "Os campos não foram preenchidos corretamente"};
+    }
+    // verifica usuario e senha na base de dados     
+    var response = {};
+    var query = {"username": user, "senha": pass};
+    usuarioOp.findOne(query, function(erro, data) {
         if(erro) {
             response = {"resultado": "Falha de acesso ao banco de dados"};
             res.json(response);
         } else if (data == null) {
-            response = {"resultado": "usuario inexistente ou senha invalida"};
-    		res.status(401).send('eq.body.pass');   // unauthorized
+            response = {"resultado": "Usuário inexistente ou senha inválida"};
+            res.json(response);
         } else {
             response = {"user": data};
-//			if(user == data.username && pass == data.senha) {
-	  			res.cookie('EA975', 'secret', {'maxAge': 3600000*24*5});
-	  			res.json(response);//res.status(200).send('/usuario.html"');  // OKss
-  //    		} else {
-//	  			res.json(response);//res.status(401).send('eq.body.pass');   // unauthorized
-  //    		}
+            res.cookie('EA975', 'secret', {'maxAge': 3600000*24*5});
+            res.json(response);
         }
-       })
-     }
-  )
-  .delete(function(req, res) {
-     res.clearCookie('EA975');	 // remove cookie no cliente
-     res.json({'resultado': 'Sucesso'});
-     }
-);
+    })
+}).delete(function(req, res) {
+    res.clearCookie('EA975');	 // remove cookie no cliente
+    res.json({'resultado': 'Sucesso'});
+});

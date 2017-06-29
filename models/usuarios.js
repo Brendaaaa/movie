@@ -5,8 +5,6 @@ var usuarioSchema = {
 	"id": Number,
 	"username": String,
 	"senha": String,
-	"email": String,
-	"image": String,
 	"lista": [{"filmeId" : Number, "titulo": String, "nota": Number, "poster": String}]
 };
 module.exports = mongoose.model('usuarios', usuarioSchema);
