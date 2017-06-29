@@ -35,33 +35,31 @@
   
   <br><br>
   Resultado: {{mensagem}}
+
   
   <br><br>
   <table cellspacing="8" >
 
-    <tr ng-repeat="x in filme">
+    <tr >
 
 
-      <td>  <img src="{{ x.poster }}" alt="{{ filme.titulo }}" style="width:300px;height:450px;" ></td>
+      <td>  <img src="{{ filme.poster }}" alt="{{ filme.titulo }}" style="width:300px;height:450px;" ></td>
       
       
       <td>
       
       <table  cellpadding="20">
-      <tr> <td><h1>{{x.titulo}}</h1></td> </tr>
-      <tr> <td>{{hdiretor}} {{x.diretor}}  </td> </tr>
-      <tr> <td>{{hgeneros}} {{x.generos}}  </td> </tr>
-      <tr> <td>{{hdata}} {{x.ano}}  </td> </tr>
-      <tr> <td>Sinopse: {{x.sinopse}} </td> </tr>
+      <tr> <td><h1>{{filme.titulo}}</h1></td> </tr>
+      <tr> <td>{{hdiretor}} {{filme.diretor}}  </td> </tr>
+      <tr> <td>{{hgeneros}} {{filme.generos}}  </td> </tr>
+      <tr> <td>{{hdata}} {{filme.ano}}  </td> </tr>
+      <tr> <td>Sinopse: {{filme.sinopse}} </td> </tr>
 
-      <div id="darNota">  
+       
         <tr><td>
-            <form>
-                Nota: (entre 1 e 5):
-                <input type="number" name="quantity" min="1" max="5">
-            </form>                      
+
         </td></tr>
-      </div>
+      
       
       </table>
         
@@ -72,6 +70,15 @@
   </table>
 
 </div>
+
+
+<div id="darNota"> 
+<form>
+    Nota: (entre 1 e 5):
+    <input type="number" name="quantity" min="1" max="5">
+</form>  
+</div>
+
 
 
 <script>

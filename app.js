@@ -303,7 +303,7 @@ router.route('/filmes/:id')   // operacoes sobre um filme(id)
             response = {"resultado": "Filme inexistente"};
             res.json(response);   
         } else {
-            response = {"filme": [data]};
+            response = {"filme": data};
             res.json(response);
         }
     })
