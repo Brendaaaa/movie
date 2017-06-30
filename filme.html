@@ -12,57 +12,33 @@
 
 <br>
 
-<div ng-app="myApp" ng-controller="myCtrl">
-  <form>
-    ID: <input type="text" ng-model="id"><br><br>
+<div id="detalhes">
 
-    <!--Curso: <input type="text" ng-model="curso"><br><br>-->
-    <button ng-click="acessa()">ACESSA</button> &nbsp;
-
-  </form>
-
-
-  
-  
-  
-  <p style="display: none;" id="mensagemResultado">Resultado: {{mensagem}}</p>
+    <p style="display: none;" id="mensagemResultado">Resultado: {{mensagem}}</p>
  
-  <p style="display: none;">Outro resultado : {{listaFilmesUsuario}}</p>
+    <p style="display: none;">Teste nota : {{mensagem3}}</p>
   
-  <p style="display: none;">Teste nota : {{mensagem3}}</p>
+    <br><br>
   
-  <p style="display: none;">User : {{user}}</p>
-  <br><br>
-  <table cellspacing="8" >
+    <table cellspacing="8" >
 
-    <tr >
+        <tr>
+            <td>  <img src="{{ filme.poster }}" alt="{{ filme.titulo }}" style="width:300px;height:450px;" ></td>
 
-
-      <td>  <img src="{{ filme.poster }}" alt="{{ filme.titulo }}" style="width:300px;height:450px;" ></td>
+            <td>
       
+            <table  cellpadding="20">
+                <tr> <td><h1>{{filme.titulo}}</h1></td> </tr>
+                <tr> <td>{{hdiretor}} {{filme.diretor}}  </td> </tr>
+                <tr> <td>{{hgeneros}} {{filme.generos}}  </td> </tr>
+                <tr> <td>{{hdata}} {{filme.ano}}  </td> </tr>
+                <tr> <td>{{hsinopse}} {{filme.sinopse}} </td> </tr>
       
-      <td>
-      
-      <table  cellpadding="20">
-      <tr> <td><h1>{{filme.titulo}}</h1></td> </tr>
-      <tr> <td>{{hdiretor}} {{filme.diretor}}  </td> </tr>
-      <tr> <td>{{hgeneros}} {{filme.generos}}  </td> </tr>
-      <tr> <td>{{hdata}} {{filme.ano}}  </td> </tr>
-      <tr> <td>{{hsinopse}} {{filme.sinopse}} </td> </tr>
+            </table>
 
-       
-        <tr><td>
-
-        </td></tr>
-      
-      
-      </table>
-        
-
-
-      </td>
-    </tr>
-  </table>
+            </td>
+        </tr>
+    </table>
   
     <form id="darNota" style="display: none;">
     Nota: (entre 1 e 5):
@@ -72,8 +48,6 @@
 
     <p id="mostrarNota" style="display: none;"> Nota: {{nota}} </p>
     
-
-
 </div>
 
 
