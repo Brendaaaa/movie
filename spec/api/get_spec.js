@@ -36,7 +36,7 @@ frisby.create('Caso dar nota: testa o metodo put de usuarios para adicionar nota
   .expectStatus(200)
   .expectHeaderContains('Content-Type', 'application/json')
   .expectJSON({
-	resultado: "O usuário que você tentou alterar, não existe"
+	resultado: "O usuário que você tentou alterar não existe"
   })
   .toss();
 
@@ -97,7 +97,7 @@ frisby.create('Caso do ADC Filme ADM. Testa o metodo de criacao de filme caso to
   .expectStatus(200)
   .expectHeaderContains('Content-Type', 'application/json')
   .expectJSON({
-	resultado: "Id e titulo sao obrigatorios. Não foi possível inserir o filme no banco de dados"
+	resultado: "Todos os campos sao obrigatorios. Não foi possível inserir o filme no banco de dados"
   })
   .toss();
 
@@ -150,7 +150,7 @@ frisby.create('Teste ver detalhes filme: testa o metodo get com id invalido')
 frisby.create('Caso cadastrar usuario. ')
   .post('http://localhost:3000/usuarios/', {
 
-	id: 204,
+	id: 205,
 	username: "oioioi",
  	senha: "thales",
 	
@@ -192,7 +192,7 @@ frisby.create('Caso cadastrar usuario. Erro de token ')
   .expectStatus(200)
   .expectHeaderContains('Content-Type', 'application/json')
   .expectJSON({
-	resultado: "Falha 1 de insercao no BD"
+	resultado: "Id, nome de usuário e senha são obrigatorios"
   })
   .toss();
 
@@ -277,7 +277,7 @@ frisby.create('Caso remover nota: (Modifica campo lista) Erro no formato da requ
   .expectStatus(200)
   .expectHeaderContains('Content-Type', 'application/json')
   .expectJSON({
-	resultado: "O usuário que você tentou alterar, não existe"
+	resultado: "O usuário que você tentou alterar não existe"
   })
   .toss();
 

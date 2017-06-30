@@ -7,6 +7,9 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
+// adicione "ponteiro" para o MongoDB
+var mongoOp = require('./models/mongo');
+
 // adicione "ponteiro" para filme
 var filmeOp = require('./models/filmes');
 
@@ -62,7 +65,7 @@ function checkAuth(req, res) {
   if(cookies) key = cookies.EA975;
   if(key == 'secret') return true;
   res.json({'resultado': 'Acesso negado. Autentique-se'});
-  return false;
+  return false; /*return true;*/
 }
 
 router.route('/') 

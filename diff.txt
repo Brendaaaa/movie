@@ -1,0 +1,113 @@
+40c40
+<         bytesRead: 428,
+---
+>         bytesRead: 114,
+171c171
+<      _idleStart: 17293,
+---
+>      _idleStart: 3077,
+205c205
+<         shouldKeepAlive: true,
+---
+>         shouldKeepAlive: false,
+228c228
+<      _peername: { address: '::ffff:127.0.0.1', family: 'IPv6', port: 58414 } },
+---
+>      _peername: { address: '::ffff:127.0.0.1', family: 'IPv6', port: 58430 } },
+235c235
+<         bytesRead: 428,
+---
+>         bytesRead: 114,
+366c366
+<      _idleStart: 17293,
+---
+>      _idleStart: 3077,
+400c400
+<         shouldKeepAlive: true,
+---
+>         shouldKeepAlive: false,
+423c423
+<      _peername: { address: '::ffff:127.0.0.1', family: 'IPv6', port: 58414 } },
+---
+>      _peername: { address: '::ffff:127.0.0.1', family: 'IPv6', port: 58430 } },
+429,437c429,431
+<    { host: 'localhost:3000',
+<      'user-agent': 'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:54.0) Gecko/20100101 Firefox/54.0',
+<      accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+<      'accept-language': 'en-US,en;q=0.5',
+<      'accept-encoding': 'gzip, deflate',
+<      cookie: 'wp-settings-time-1=1497635144; EA975=secret',
+<      connection: 'keep-alive',
+<      'upgrade-insecure-requests': '1',
+<      'if-none-match': 'W/"9a4-3v9D8x7k8JqacLxVHQUvFw"' },
+---
+>    { 'content-type': 'application/x-www-form-urlencoded',
+>      host: 'localhost:3000',
+>      connection: 'close' },
+439c433,435
+<    [ 'Host',
+---
+>    [ 'content-type',
+>      'application/x-www-form-urlencoded',
+>      'host',
+441,450d436
+<      'User-Agent',
+<      'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:54.0) Gecko/20100101 Firefox/54.0',
+<      'Accept',
+<      'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+<      'Accept-Language',
+<      'en-US,en;q=0.5',
+<      'Accept-Encoding',
+<      'gzip, deflate',
+<      'Cookie',
+<      'wp-settings-time-1=1497635144; EA975=secret',
+452,456c438
+<      'keep-alive',
+<      'Upgrade-Insecure-Requests',
+<      '1',
+<      'If-None-Match',
+<      'W/"9a4-3v9D8x7k8JqacLxVHQUvFw"' ],
+---
+>      'close' ],
+470c452
+<         bytesRead: 428,
+---
+>         bytesRead: 114,
+601c583
+<      _idleStart: 17293,
+---
+>      _idleStart: 3077,
+635c617
+<         shouldKeepAlive: true,
+---
+>         shouldKeepAlive: false,
+658c640
+<      _peername: { address: '::ffff:127.0.0.1', family: 'IPv6', port: 58414 } },
+---
+>      _peername: { address: '::ffff:127.0.0.1', family: 'IPv6', port: 58430 } },
+695c677
+<      shouldKeepAlive: true,
+---
+>      shouldKeepAlive: false,
+730c712
+<         _idleStart: 17293,
+---
+>         _idleStart: 3077,
+764c746
+<         _idleStart: 17293,
+---
+>         _idleStart: 3077,
+799,800c781,782
+<   _startAt: [ 8266, 742239170 ],
+<   _startTime: 2017-06-29T22:35:20.039Z,
+---
+>   _startAt: [ 8436, 181589247 ],
+>   _startTime: 2017-06-29T22:38:09.478Z,
+804c786
+<   cookies: { 'wp-settings-time-1': '1497635144', EA975: 'secret' },
+---
+>   cookies: {},
+811c793
+< [0mGET /filmes [36m304 [0m154.598 ms - -[0m
+---
+> [0mGET /filmes [32m200 [0m33.378 ms - 44[0m
