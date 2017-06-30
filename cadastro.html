@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+<body>
+
+<br>
+
+<div ng-app="myApp" ng-controller="myCtrl">
+
+    <h1>Cadastro de Usuarios</h1>
+ 
+    <br><br>
+
+
+    <form>
+        ID: <input type="text" ng-model="id"><br><br>
+        Username: <input type="text" ng-model="username"><br><br>
+        Senha: <input type="text" ng-model="senha"><br><br>
+        <button ng-click="insere()">CADASTRAR</button> &nbsp;
+    </form>
+
+    <br><br>
+    {{mensagem}}
+  
+</div>
+
+<script>
+var app = angular.module('myApp', []);
+app.controller('myCtrl', function($scope, $http) {
+
+    // INSERE
+    $scope.insere = function() {
+        $scope.clear();
+        if ($scope.id == undefined || $scope.id.length == 0 ||
+            $scope.username == undefined || $scope.username.length == 0 ||
+            $scope.senha == undefined || $scope.senha.length == 0) {
+        
+            $scope.clear();
+            $scope.mensagem = "Os campos não foram preenchidos corretamente";
+            return;
+        }
+        
+        var data = {"id": $scope.id,
+                    "username": $scope.username,
+                    "email": $scope.email,
+                    "senha": $scope.senha};
+        
+        var request = $http({"method": "post",
+                             "url": "/usuarios",
+                             "data": data});
+        
+        request.success(function(reply) {
+            alert(reply.resultado);
+            window.open("/filmes.html", "_self");
+            //close();
+        });
+        
+        request.error(function(reply) {
+            alert("Falha na requisicao");
+        });
+    };
+  
+    // CLEAR
+    $scope.clear = function() {
+        $scope.usuarios = [];
+        $scope.mensagem = "";
+        $scope.hid = $scope.husername = $scope.hemail = $scope.hsenha = "";
+    }
+});
+</script> 
+
+</body>
+</html>

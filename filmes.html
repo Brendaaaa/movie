@@ -19,7 +19,7 @@
         </form>
         <br><br>
         <br><br>
-        <h6>Ainda não tem um cadastro? <a href="usuariosCad.html">Cadastre-se</a><br><br>
+        <h6>Ainda não tem um cadastro? <a href="cadastro.html">Cadastre-se</a><br><br>
     </div>
 
     
@@ -401,7 +401,7 @@ app.controller('myCtrl', function($scope, $http, dataService) {
         document.getElementById('lista').style.display='block';
         document.getElementById('logar').style.display='none';
         document.getElementById('detalhes').style.display='none';
-        $scope.clear("Meus filmes");
+        $scope.clear("Filmes de " + $scope.user.username);
     };
     
     $scope.prepareForHome = function() {
@@ -446,6 +446,10 @@ app.controller('myCtrl', function($scope, $http, dataService) {
     $scope.doPost = function() {
         $scope.result = "";
         var url = "/authentication";
+        if ($scope.userField == null || $scope.pass == null){
+            alert("Campos não preenchidos");
+            return;
+        }
         var data = {"user": $scope.userField, "pass": $scope.pass};
         var request = $http({"method": "post",
                              "url": url,
@@ -461,7 +465,7 @@ app.controller('myCtrl', function($scope, $http, dataService) {
             }
         });
         request.error(function(reply, status) {
-            alert("Falha de autenticação");
+            c
         });
     };
     

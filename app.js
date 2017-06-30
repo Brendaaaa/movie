@@ -7,9 +7,6 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
-// adicione "ponteiro" para o MongoDB
-var mongoOp = require('./models/mongo');
-
 // adicione "ponteiro" para filme
 var filmeOp = require('./models/filmes');
 
@@ -68,13 +65,6 @@ function checkAuth(req, res) {
   return false;
 }
 
-// index.html
-router.route('/') 
-.get(function(req, res) {  // GET
-    var path = 'index.html';
-    res.sendfile(path, {"root": "./"});
-});
-  
 router.route('/') 
 .get(function(req, res) {  // GET
     var path = 'filmes.html';
@@ -261,10 +251,6 @@ router.route('/usuarios')
     })
 })
 .post(function(req, res) { // POST (cria)
-    if(!checkAuth(req, res)){
-        return;
-    }
-
     var query = {"id": req.body.id};
     var response = {};
     usuarioOp.findOne(query, function(erro, data) {
