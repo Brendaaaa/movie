@@ -15,10 +15,6 @@ var filmeOp = require('./models/filmes');
 
 var usuarioOp = require('./models/usuarios');
 
-// comente as duas linhas abaixo
-// var index = require('./routes/index');
-// var users = require('./routes/users');
-
 var app = express();
 
 // view engine setup
@@ -54,9 +50,7 @@ app.use(function(err, req, res, next) {
   res.locals.error = req.app.get('env') === 'development' ? err : {};
 
   // render the error page
-  res.status(err.status ||
-  
-   500);
+  res.status(err.status || 500);
   res.render('error');
 });
 
@@ -98,7 +92,7 @@ router.route('/filmes')   // operacoes sobre todos os filmes
         if(erro){
             response = {"resultado": "Falha de acesso ao banco de dados"};
         } else {
-            response = {"filmes": data}; //TODO ter generos na forma d string....
+            response = {"filmes": data};
         }
         res.json(response);
     })
@@ -141,7 +135,7 @@ router.route('/filmes')   // operacoes sobre todos os filmes
             }
             res.json(response);
         })
-    } else {
+    } else { // Criar filme: user case do ADMIN
         var query = {"id": req.body.id};
         var response = {};
         filmeOp.findOne(query, function(erro, data) {
@@ -149,8 +143,7 @@ router.route('/filmes')   // operacoes sobre todos os filmes
                 var db = new filmeOp();
                 //TODO Adicionar todos os campos
                 try {   
-                    if(req.body.id == null || req.body.titulo == null || req.body.ano == null || req.body.diretor == null || req.body.sinopse == null || req.body.poster == null || req.body.generos == null || req.body.critica == null){ //TODO remove id como obrigatorio, pq o id eh gerado pelo servidor
-                        //TODO tratar quando o id ja foi usado
+                    if(req.body.id == null || req.body.titulo == null || req.body.ano == null || req.body.diretor == null || req.body.sinopse == null || req.body.poster == null || req.body.generos == null || req.body.critica == null){
                         throw error;
                     }
                     db.id = req.body.id;
@@ -162,7 +155,7 @@ router.route('/filmes')   // operacoes sobre todos os filmes
                     db.generos = req.body.generos;
                     db.critica = req.body.critica;      
                 } catch(error) {
-                    response = {"resultado": "Id e titulo sao obrigatorios. Não foi possível inserir o filme no banco de dados"};
+                    response = {"resultado": "Todos os campos sao obrigatorios. Não foi possível inserir o filme no banco de dados"};
                     return res.json(response);
                 }
             
@@ -175,7 +168,6 @@ router.route('/filmes')   // operacoes sobre todos os filmes
                         res.json(response);
                     }
                 })
-
             } else {
                 response = {"resultado": "Filme ja existente"};
                 res.json(response);
@@ -277,9 +269,9 @@ router.route('/usuarios')
     var response = {};
     usuarioOp.findOne(query, function(erro, data) {
         if (data == null) {
-            var db = new usuarioOp(); //TODO checar se algum campo obrigatorio esta vazio... || funciona o que eu fiz, agora se alguém quiser modificar a implementação, a vontade
+            var db = new usuarioOp();
             try {
-                if(req.body.id == null ){//|| req.body.username == null || req.body.senha == null || req.body.email == null){
+                if(req.body.id == null || req.body.username == null || req.body.senha == null){
                     throw error;
                 }
                 db.id = req.body.id;
@@ -299,7 +291,7 @@ router.route('/usuarios')
                 })
             
             } catch(error) {
-                response = {"resultado": "Falha 1 de insercao no BD"};
+                response = {"resultado": "Id, nome de usuário e senha são obrigatorios"};
                 return res.json(response);
             }
         } else {
@@ -333,7 +325,6 @@ router.route('/usuarios/:id')   // operacoes sobre um usuario(id)
             response = {"usuario": data};
             res.json(response);
         }
-        console.log(response);
     })
 })
 .put(function(req, res) {   // PUT (altera)
@@ -347,7 +338,7 @@ router.route('/usuarios/:id')   // operacoes sobre um usuario(id)
             response = {"resultado": "Falha de acesso ao banco de dados"};
             res.json(response);
         } else if (data == null) { 
-            response = {"resultado": "O usuário que você tentou alterar, não existe"};
+            response = {"resultado": "O usuário que você tentou alterar não existe"};
             res.json(response);   
         } else {
             response = {"resultado": "SUCESSO",
@@ -364,11 +355,11 @@ router.route('/usuarios/:id')   // operacoes sobre um usuario(id)
             response = {"resultado": "Falha de acesso ao banco de dados"};
             res.json(response);
         } else if (data == null) {        
-            response = {"resultado": "usuario inexistente"};
+            response = {"resultado": "Usuario inexistente"};
             res.json(response);
         } else {
             //deletar lista e notas deste usuario aqui
-            response = {"resultado": "usuario removido do BD"};
+            response = {"resultado": "Usuario removido com sucesso"};
             res.json(response);
         }
     })
@@ -380,8 +371,7 @@ router.route('/authentication')   // autenticação
     res.header('Cache-Control', 'no-cache');
     res.sendfile(path, {"root": "./"});
 })
-.post(function(req, res) { 
-    console.log(JSON.stringify(req.body));
+.post(function(req, res) {
     var user = req.body.user;
     var pass = req.body.pass;
     if (user == null || pass == null){
